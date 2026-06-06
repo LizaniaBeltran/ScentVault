@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: scentvault-db
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: scentvault
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - scentvault_data:/var/lib/postgresql/data
+
+volumes:
+  scentvault_data:
+  

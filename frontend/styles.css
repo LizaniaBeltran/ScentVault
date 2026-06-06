@@ -1,0 +1,563 @@
+:root {
+    --black: #1E1E1E;
+    --black-2: #141414;
+    --gold: #C9A227;
+    --gold-soft: rgba(201, 162, 39, 0.16);
+    --white: #FFFFFF;
+    --cream: #F7F1E8;
+    --muted: #B8B2A9;
+    --line: rgba(255, 255, 255, 0.12);
+    --danger: #D96B6B;
+    --success: #8ECF9B;
+    --shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--white);
+    background:
+        radial-gradient(circle at top left, rgba(201, 162, 39, 0.18), transparent 34rem),
+        linear-gradient(135deg, #111 0%, var(--black) 48%, #090909 100%);
+    font-family: Inter, Arial, sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.is-hidden {
+    display: none !important;
+}
+
+.login-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, 460px);
+    gap: 2rem;
+    min-height: 100vh;
+    padding: clamp(1rem, 3vw, 3rem);
+    align-items: stretch;
+}
+
+.login-brand,
+.login-card,
+.panel,
+.hero-panel,
+.stat-card {
+    border: 1px solid var(--line);
+    background: rgba(30, 30, 30, 0.78);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(20px);
+}
+
+.login-brand {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    border-radius: 2rem;
+    padding: clamp(2rem, 6vw, 5rem);
+}
+
+.login-brand::before {
+    content: "";
+    position: absolute;
+    inset: 8% 8% auto auto;
+    width: min(32vw, 380px);
+    aspect-ratio: 1;
+    border: 1px solid rgba(201, 162, 39, 0.34);
+    border-radius: 44% 56% 48% 52%;
+    background: linear-gradient(135deg, rgba(201, 162, 39, 0.28), transparent 62%);
+}
+
+.brand-mark {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border: 1px solid rgba(201, 162, 39, 0.7);
+    border-radius: 50%;
+    color: var(--gold);
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.eyebrow {
+    margin: 0 0 0.65rem;
+    color: var(--gold);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+h1,
+h2,
+h3 {
+    margin: 0;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    line-height: 0.95;
+}
+
+h1 {
+    margin-top: 1.5rem;
+    font-size: clamp(4rem, 10vw, 8.5rem);
+}
+
+h2 {
+    font-size: clamp(2.2rem, 5vw, 4rem);
+}
+
+h3 {
+    font-size: clamp(1.65rem, 3vw, 2.35rem);
+}
+
+.brand-copy,
+.muted {
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.brand-copy {
+    max-width: 42rem;
+    margin: 1.25rem 0 2rem;
+    font-size: 1.08rem;
+}
+
+.brand-notes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.brand-notes span,
+.user-chip,
+.pill {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.65rem 0.9rem;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--cream);
+}
+
+.login-card {
+    align-self: center;
+    border-radius: 1.5rem;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.form-stack,
+.grid-form {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.6rem;
+}
+
+label {
+    display: grid;
+    gap: 0.5rem;
+    color: var(--cream);
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 0.9rem;
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--white);
+    outline: none;
+    padding: 0.85rem 0.95rem;
+}
+
+textarea {
+    resize: vertical;
+}
+
+select option {
+    color: var(--black);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 4px var(--gold-soft);
+}
+
+.primary-button,
+.secondary-button,
+.ghost-button,
+.nav-link {
+    border: 0;
+    border-radius: 999px;
+    padding: 0.85rem 1.15rem;
+    font-weight: 800;
+}
+
+.primary-button {
+    background: linear-gradient(135deg, #E5C95B, var(--gold));
+    color: #16120A;
+}
+
+.secondary-button {
+    border: 1px solid rgba(201, 162, 39, 0.58);
+    background: var(--gold-soft);
+    color: var(--gold);
+}
+
+.ghost-button {
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--white);
+}
+
+.form-message {
+    min-height: 1.25rem;
+    margin: 0;
+    color: var(--danger);
+}
+
+.app-shell {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    min-height: 100vh;
+}
+
+.sidebar {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    height: 100vh;
+    border-right: 1px solid var(--line);
+    padding: 1.5rem;
+    background: rgba(12, 12, 12, 0.86);
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.sidebar-brand strong,
+.sidebar-brand span {
+    display: block;
+}
+
+.sidebar-brand span,
+.user-chip small {
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+
+.nav-menu {
+    display: grid;
+    gap: 0.7rem;
+}
+
+.nav-link {
+    width: 100%;
+    background: transparent;
+    color: var(--muted);
+    text-align: left;
+}
+
+.nav-link.is-active,
+.nav-link:hover {
+    background: var(--gold-soft);
+    color: var(--gold);
+}
+
+#logout-button {
+    margin-top: auto;
+}
+
+.workspace {
+    min-width: 0;
+    padding: clamp(1rem, 3vw, 2rem);
+}
+
+.topbar,
+.panel-header,
+.hero-panel,
+.form-actions,
+.sale-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.topbar {
+    margin-bottom: 1.5rem;
+}
+
+.user-chip {
+    display: grid;
+    min-width: 11rem;
+}
+
+.hero-panel,
+.panel,
+.stat-card {
+    border-radius: 1.35rem;
+}
+
+.hero-panel,
+.panel {
+    padding: 1.25rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.stat-card {
+    padding: 1.15rem;
+}
+
+.stat-card span {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.stat-card strong {
+    display: block;
+    margin-top: 0.55rem;
+    color: var(--white);
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 2.3rem;
+}
+
+.stat-card.accent strong {
+    color: var(--gold);
+}
+
+.content-grid,
+.section-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem;
+}
+
+.section-layout {
+    grid-template-columns: minmax(320px, 0.8fr) minmax(0, 1.2fr);
+    align-items: start;
+}
+
+.grid-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.full {
+    grid-column: 1 / -1;
+}
+
+.cards-list,
+.compact-list,
+.timeline,
+.sale-items {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.perfume-card,
+.list-item,
+.timeline-item,
+.sale-row {
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    padding: 0.9rem;
+    background: rgba(255, 255, 255, 0.045);
+}
+
+.perfume-card {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: center;
+}
+
+.perfume-thumb {
+    width: 72px;
+    height: 72px;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, rgba(201, 162, 39, 0.25), rgba(255, 255, 255, 0.06));
+    object-fit: cover;
+}
+
+.perfume-card h4,
+.list-item strong,
+.timeline-item strong {
+    margin: 0 0 0.25rem;
+}
+
+.perfume-card p,
+.list-item p,
+.timeline-item p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.table-scroll {
+    overflow-x: auto;
+    margin-top: 1rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 680px;
+}
+
+th,
+td {
+    border-bottom: 1px solid var(--line);
+    padding: 0.9rem 0.7rem;
+    text-align: left;
+}
+
+th {
+    color: var(--gold);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+td {
+    color: var(--cream);
+}
+
+.mini-button {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--white);
+    padding: 0.45rem 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+.toast {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 10;
+    max-width: min(420px, calc(100vw - 2rem));
+    transform: translateY(1rem);
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    background: #111;
+    color: var(--white);
+    opacity: 0;
+    padding: 0.9rem 1rem;
+    pointer-events: none;
+    transition: 180ms ease;
+}
+
+.toast.is-visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.toast.success {
+    border-color: rgba(142, 207, 155, 0.5);
+}
+
+.toast.error {
+    border-color: rgba(217, 107, 107, 0.65);
+}
+
+@media (max-width: 1100px) {
+    .stats-grid,
+    .content-grid,
+    .section-layout {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .section-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 860px) {
+    .login-shell,
+    .app-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .login-brand {
+        min-height: 46vh;
+    }
+
+    .sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .nav-menu {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .nav-link {
+        text-align: center;
+    }
+}
+
+@media (max-width: 640px) {
+    .workspace,
+    .sidebar {
+        padding: 1rem;
+    }
+
+    .topbar,
+    .hero-panel,
+    .panel-header,
+    .form-actions,
+    .sale-row {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .stats-grid,
+    .content-grid,
+    .grid-form,
+    .nav-menu {
+        grid-template-columns: 1fr;
+    }
+
+    .perfume-card {
+        grid-template-columns: 56px minmax(0, 1fr);
+    }
+
+    .perfume-card .mini-button {
+        grid-column: 1 / -1;
+    }
+}

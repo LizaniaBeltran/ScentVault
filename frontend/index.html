@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScentVault | Boutique de Perfumes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main id="login-view" class="login-shell">
+        <section class="login-brand" aria-label="Presentacion ScentVault">
+            <div class="brand-mark">SV</div>
+            <p class="eyebrow">Boutique privada</p>
+            <h1>ScentVault</h1>
+            <p class="brand-copy">Gestion premium para colecciones de perfumes, clientes exclusivos y ventas de alto valor.</p>
+            <div class="brand-notes">
+                <span>Inventario curado</span>
+                <span>Clientes selectos</span>
+                <span>Ventas trazables</span>
+            </div>
+        </section>
+
+        <section class="login-card" aria-label="Inicio de sesion">
+            <p class="eyebrow">Acceso seguro</p>
+            <h2>Iniciar sesion</h2>
+            <p class="muted">Ingresa con tus credenciales de ScentVault.</p>
+            <form id="login-form" class="form-stack">
+                <label>
+                    Correo electronico
+                    <input type="email" name="correo" autocomplete="email" placeholder="admin@scentvault.com" required>
+                </label>
+                <label>
+                    Contrasena
+                    <input type="password" name="password" autocomplete="current-password" placeholder="********" required>
+                </label>
+                <button class="primary-button" type="submit">Entrar al vault</button>
+                <p id="login-message" class="form-message" role="status"></p>
+            </form>
+        </section>
+    </main>
+
+    <main id="app-view" class="app-shell is-hidden">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-mark">SV</div>
+                <div>
+                    <strong>ScentVault</strong>
+                    <span>Boutique OS</span>
+                </div>
+            </div>
+            <nav class="nav-menu" aria-label="Navegacion principal">
+                <button class="nav-link is-active" type="button" data-view="dashboard">Dashboard</button>
+                <button class="nav-link" type="button" data-view="perfumes">Perfumes</button>
+                <button class="nav-link" type="button" data-view="clientes">Clientes</button>
+                <button class="nav-link" type="button" data-view="ventas">Ventas</button>
+            </nav>
+            <button id="logout-button" class="ghost-button" type="button">Cerrar sesion</button>
+        </aside>
+
+        <section class="workspace">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">Panel administrativo</p>
+                    <h2 id="view-title">Dashboard</h2>
+                </div>
+                <div class="user-chip">
+                    <span id="user-name">Usuario</span>
+                    <small id="user-role">Rol</small>
+                </div>
+            </header>
+
+            <section id="dashboard-section" class="view-section">
+                <div class="hero-panel">
+                    <div>
+                        <p class="eyebrow">Resumen ejecutivo</p>
+                        <h3>Operacion boutique en tiempo real</h3>
+                        <p class="muted">Consulta inventario, clientes y ventas desde una experiencia sobria, premium y responsive.</p>
+                    </div>
+                    <button id="refresh-dashboard" class="secondary-button" type="button">Actualizar</button>
+                </div>
+                <div class="stats-grid">
+                    <article class="stat-card">
+                        <span>Perfumes activos</span>
+                        <strong id="stat-perfumes">0</strong>
+                    </article>
+                    <article class="stat-card">
+                        <span>Clientes</span>
+                        <strong id="stat-clientes">0</strong>
+                    </article>
+                    <article class="stat-card">
+                        <span>Ventas</span>
+                        <strong id="stat-ventas">0</strong>
+                    </article>
+                    <article class="stat-card accent">
+                        <span>Ingresos</span>
+                        <strong id="stat-ingresos">$0.00</strong>
+                    </article>
+                </div>
+                <div class="content-grid">
+                    <article class="panel">
+                        <div class="panel-header">
+                            <h3>Ultimas ventas</h3>
+                        </div>
+                        <div id="recent-sales" class="timeline"></div>
+                    </article>
+                    <article class="panel">
+                        <div class="panel-header">
+                            <h3>Stock bajo</h3>
+                        </div>
+                        <div id="low-stock" class="compact-list"></div>
+                    </article>
+                </div>
+            </section>
+
+            <section id="perfumes-section" class="view-section is-hidden">
+                <div class="section-layout">
+                    <article class="panel form-panel">
+                        <div class="panel-header">
+                            <div>
+                                <p class="eyebrow">Catalogo</p>
+                                <h3 id="perfume-form-title">Nuevo perfume</h3>
+                            </div>
+                        </div>
+                        <form id="perfume-form" class="grid-form">
+                            <input type="hidden" name="id">
+                            <label>Nombre<input name="nombre" required></label>
+                            <label>Marca<input name="marca" required></label>
+                            <label>Familia olfativa<input name="familia_olfativa" required></label>
+                            <label>Temporada<input name="temporada"></label>
+                            <label>Duracion horas<input name="duracion_horas" type="number" min="0" step="0.1"></label>
+                            <label>Precio<input name="precio" type="number" min="1" step="0.01" required></label>
+                            <label>Stock<input name="stock" type="number" min="0" step="1" required></label>
+                            <label>Imagen URL<input name="imagen_url" type="url"></label>
+                            <label class="full">Notas salida<textarea name="notas_salida" rows="2"></textarea></label>
+                            <label class="full">Notas medias<textarea name="notas_medias" rows="2"></textarea></label>
+                            <label class="full">Notas fondo<textarea name="notas_fondo" rows="2"></textarea></label>
+                            <label class="full">Descripcion<textarea name="descripcion" rows="3"></textarea></label>
+                            <div class="form-actions full">
+                                <button class="primary-button" type="submit">Guardar perfume</button>
+                                <button id="cancel-perfume-edit" class="ghost-button" type="button">Limpiar</button>
+                            </div>
+                        </form>
+                    </article>
+                    <article class="panel table-panel">
+                        <div class="panel-header">
+                            <h3>Perfumes</h3>
+                            <button id="reload-perfumes" class="secondary-button" type="button">Recargar</button>
+                        </div>
+                        <div id="perfumes-list" class="cards-list"></div>
+                    </article>
+                </div>
+            </section>
+
+            <section id="clientes-section" class="view-section is-hidden">
+                <div class="section-layout">
+                    <article class="panel form-panel">
+                        <div class="panel-header">
+                            <div>
+                                <p class="eyebrow">Relaciones</p>
+                                <h3 id="cliente-form-title">Nuevo cliente</h3>
+                            </div>
+                        </div>
+                        <form id="cliente-form" class="grid-form">
+                            <input type="hidden" name="id">
+                            <label>Nombre<input name="nombre" required></label>
+                            <label>Telefono<input name="telefono" required></label>
+                            <label>Correo<input name="correo" type="email" required></label>
+                            <label>Preferencia olfativa<input name="preferencia_olfativa" required></label>
+                            <div class="form-actions full">
+                                <button class="primary-button" type="submit">Guardar cliente</button>
+                                <button id="cancel-cliente-edit" class="ghost-button" type="button">Limpiar</button>
+                            </div>
+                        </form>
+                    </article>
+                    <article class="panel table-panel">
+                        <div class="panel-header">
+                            <h3>Clientes</h3>
+                            <button id="reload-clientes" class="secondary-button" type="button">Recargar</button>
+                        </div>
+                        <div class="table-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Telefono</th>
+                                        <th>Correo</th>
+                                        <th>Preferencia</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="clientes-table"></tbody>
+                            </table>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section id="ventas-section" class="view-section is-hidden">
+                <div class="section-layout">
+                    <article class="panel form-panel">
+                        <div class="panel-header">
+                            <div>
+                                <p class="eyebrow">Punto de venta</p>
+                                <h3>Nueva venta</h3>
+                            </div>
+                        </div>
+                        <form id="venta-form" class="grid-form">
+                            <label>Cliente<select name="cliente_id" id="venta-cliente"></select></label>
+                            <label>Metodo de pago
+                                <select name="metodo_pago" required>
+                                    <option value="">Seleccionar</option>
+                                    <option value="efectivo">Efectivo</option>
+                                    <option value="tarjeta">Tarjeta</option>
+                                    <option value="transferencia">Transferencia</option>
+                                </select>
+                            </label>
+                            <label>Perfume<select id="venta-perfume"></select></label>
+                            <label>Cantidad<input id="venta-cantidad" type="number" min="1" step="1" value="1"></label>
+                            <div class="form-actions full">
+                                <button id="add-product" class="secondary-button" type="button">Agregar producto</button>
+                                <button class="primary-button" type="submit">Registrar venta</button>
+                            </div>
+                        </form>
+                        <div id="sale-items" class="sale-items"></div>
+                    </article>
+                    <article class="panel table-panel">
+                        <div class="panel-header">
+                            <h3>Ventas</h3>
+                            <button id="reload-ventas" class="secondary-button" type="button">Recargar</button>
+                        </div>
+                        <div class="table-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Cliente</th>
+                                        <th>Vendedor</th>
+                                        <th>Pago</th>
+                                        <th>Total</th>
+                                        <th>Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ventas-table"></tbody>
+                            </table>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+</body>
+</html>
