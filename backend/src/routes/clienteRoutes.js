@@ -18,6 +18,19 @@ router.get(
     clienteController.obtenerClientes
 );
 
+router.get(
+    '/inactivos',
+    verificarToken,
+    permitirRoles('admin'),
+    clienteController.obtenerClientesInactivos
+);
+
+router.get(
+    '/:id/historial',
+    verificarToken,
+    clienteController.obtenerHistorialCompras
+);
+
 router.post(
     '/',
     verificarToken,
@@ -32,6 +45,20 @@ router.put(
     permitirRoles('admin', 'vendedor'),
     validarCliente,
     clienteController.actualizarCliente
+);
+
+router.patch(
+    '/:id/baja',
+    verificarToken,
+    permitirRoles('admin'),
+    clienteController.darBajaCliente
+);
+
+router.patch(
+    '/:id/reactivar',
+    verificarToken,
+    permitirRoles('admin'),
+    clienteController.reactivarCliente
 );
 
 module.exports = router;

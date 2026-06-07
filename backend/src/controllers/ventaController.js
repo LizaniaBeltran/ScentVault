@@ -9,7 +9,9 @@ const transformarVenta = (venta) => ({
     subtotal: venta.subtotal,
     iva: venta.iva,
     cliente: venta.cliente ? venta.cliente.nombre || 'Cliente mostrador' : 'Cliente mostrador',
+    cliente_id: venta.cliente ? venta.cliente._id || null : null,
     vendedor: venta.vendedor ? venta.vendedor.nombre || '' : '',
+    vendedor_id: venta.vendedor ? venta.vendedor._id || null : null,
     productos: venta.productos || []
 });
 
@@ -35,6 +37,34 @@ const obtenerVentas = async (req, res) => {
     }
 };
 
+const obtenerVentaPorId = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const venta = await Venta.findById(id)
+            .populate('cliente', 'nombre telefono correo')
+            .populate('vendedor', 'nombre correo')
+            .populate('productos.perfume', 'nombre marca imagen_url');
+
+        if (!venta) {
+            return res.status(404).json({
+                ok: false,
+                error: 'Venta no encontrada'
+            });
+        }
+
+        res.json({
+            ok: true,
+            data: transformarVenta(venta)
+        });
+    } catch (error) {
+        console.error('Error al obtener venta:', error);
+        res.status(500).json({
+            ok: false,
+            error: 'Error al obtener venta'
+        });
+    }
+};
+
 const crearVenta = async (req, res) => {
     try {
         const usuarioId = req.usuario.id;
@@ -53,6 +83,13 @@ const crearVenta = async (req, res) => {
                 });
             }
 
+            if (!perfume.activo) {
+                return res.status(400).json({
+                    ok: false,
+                    error: `${perfume.nombre} está inactivo y no puede venderse`
+                });
+            }
+
             if (perfume.stock < item.cantidad) {
                 return res.status(400).json({
                     ok: false,
@@ -67,6 +104,7 @@ const crearVenta = async (req, res) => {
             productosVenta.push({
                 perfume: perfume._id,
                 nombre: perfume.nombre,
+                imagen_url: perfume.imagen_url || null,
                 cantidad: item.cantidad,
                 precio_unitario: precioUnitario,
                 subtotal: itemSubtotal
@@ -94,7 +132,8 @@ const crearVenta = async (req, res) => {
 
         const ventaGuardada = await Venta.findById(nuevaVenta._id)
             .populate('cliente', 'nombre')
-            .populate('vendedor', 'nombre');
+            .populate('vendedor', 'nombre')
+            .populate('productos.perfume', 'nombre imagen_url');
 
         res.status(201).json({
             ok: true,
@@ -111,7 +150,32 @@ const crearVenta = async (req, res) => {
     }
 };
 
+const buscarPerfumesVenta = async (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q || q.length < 1) {
+            return res.json({ ok: true, data: [] });
+        }
+
+        const perfumes = await Perfume.find({
+            activo: true,
+            stock: { $gt: 0 },
+            $or: [
+                { nombre: { $regex: q, $options: 'i' } },
+                { marca: { $regex: q, $options: 'i' } }
+            ]
+        }).limit(10);
+
+        res.json({ ok: true, data: perfumes });
+    } catch (error) {
+        console.error('Error al buscar perfumes:', error);
+        res.status(500).json({ ok: false, error: 'Error al buscar perfumes' });
+    }
+};
+
 module.exports = {
     obtenerVentas,
-    crearVenta
+    obtenerVentaPorId,
+    crearVenta,
+    buscarPerfumesVenta
 };

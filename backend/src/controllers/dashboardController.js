@@ -4,70 +4,47 @@ const Venta = require('../models/ventaModel');
 
 const obtenerResumenDashboard = async (req, res) => {
     try {
-        // Total de perfumes
-        const totalPerfumes = await Perfume.countDocuments({ activo: true });
-
-        // Total de clientes
-        const totalClientes = await Cliente.countDocuments();
-
-        // Total de ventas
-        const totalVentas = await Venta.countDocuments();
-
-        // Valor total del inventario
-        const perfumes = await Perfume.find({ activo: true });
-        const valorInventario = perfumes.reduce((total, perfume) => {
-            return total + (perfume.precio * perfume.stock);
-        }, 0);
-
-        // Ventas del mes actual
         const ahora = new Date();
+        const inicioHoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
         const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
-        const ventasMes = await Venta.aggregate([
-            {
-                $match: {
-                    fecha_venta: {
-                        $gte: inicioMes,
-                        $lte: ahora
-                    }
-                }
-            },
-            {
-                $group: {
-                    _id: null,
-                    totalVentas: { $sum: '$total' },
-                    cantidadVentas: { $sum: 1 }
-                }
-            }
+
+        const [totalPerfumes, totalClientes, totalVentas, perfumes, ventasDia, ventasMes, ultimosClientes, ultimasVentas, ultimosPerfumes] = await Promise.all([
+            Perfume.countDocuments({ activo: true }),
+            Cliente.countDocuments({ activo: true }),
+            Venta.countDocuments(),
+            Perfume.find({ activo: true }).select('precio stock'),
+            Venta.aggregate([{ $match: { fecha_venta: { $gte: inicioHoy, $lte: ahora } } }, { $group: { _id: null, total: { $sum: '$total' }, count: { $sum: 1 } } }]),
+            Venta.aggregate([{ $match: { fecha_venta: { $gte: inicioMes, $lte: ahora } } }, { $group: { _id: null, total: { $sum: '$total' }, count: { $sum: 1 } } }]),
+            Cliente.find({ activo: true }).sort({ createdAt: -1 }).limit(5).select('nombre correo createdAt'),
+            Venta.find().sort({ fecha_venta: -1 }).limit(5).populate('cliente', 'nombre').select('total metodo_pago fecha_venta productos cliente'),
+            Perfume.find({ activo: true }).sort({ createdAt: -1 }).limit(5).select('nombre marca precio imagen_url stock')
         ]);
 
-        const totalVentasMes = ventasMes.length > 0 ? ventasMes[0].totalVentas : 0;
-        const cantidadVentasMes = ventasMes.length > 0 ? ventasMes[0].cantidadVentas : 0;
+        const valorInventario = perfumes.reduce((t, p) => t + (p.precio * p.stock), 0);
+        const totalVentasDia = ventasDia.length > 0 ? ventasDia[0].total : 0;
+        const totalVentasMes = ventasMes.length > 0 ? ventasMes[0].total : 0;
+        const productosAgotados = perfumes.filter(p => p.stock === 0).length;
+        const productosBajoStock = perfumes.filter(p => p.stock > 0 && p.stock <= 5).length;
 
         res.json({
             ok: true,
             data: {
                 perfumes: totalPerfumes,
-                total_perfumes: totalPerfumes,
-                totalPerfumes,
                 clientes: totalClientes,
-                total_clientes: totalClientes,
-                totalClientes,
                 ventas: totalVentas,
-                total_ventas: totalVentas,
-                totalVentas,
-                ingresos: totalVentasMes,
-                total_ingresos: totalVentasMes,
-                totalVentasMes,
+                ventas_dia: totalVentasDia,
+                ventas_mes: totalVentasMes,
                 valor_inventario: valorInventario,
-                valorInventario
+                agotados: productosAgotados,
+                bajo_stock: productosBajoStock,
+                ultimos_clientes: ultimosClientes,
+                ultimas_ventas: ultimasVentas,
+                ultimos_perfumes: ultimosPerfumes
             }
         });
     } catch (error) {
-        console.error('Error al obtener resumen dashboard:', error);
-        res.status(500).json({
-            ok: false,
-            error: 'Error al obtener resumen del dashboard'
-        });
+        console.error('Error en dashboard:', error);
+        res.status(500).json({ ok: false, error: 'Error al obtener resumen del dashboard' });
     }
 };
 

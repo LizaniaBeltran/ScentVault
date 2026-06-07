@@ -8,6 +8,8 @@ const upload = require('../middlewares/uploadMiddleware');
 
 router.get('/', verificarToken, perfumeController.obtenerPerfumes);
 
+router.get('/inactivos', verificarToken, permitirRoles('admin'), perfumeController.obtenerPerfumesInactivos);
+
 router.get('/:id', verificarToken, perfumeController.obtenerPerfumePorId);
 
 router.post(
@@ -28,11 +30,18 @@ router.put(
     perfumeController.actualizarPerfume
 );
 
-router.delete(
-    '/:id',
+router.patch(
+    '/:id/baja',
     verificarToken,
     permitirRoles('admin'),
-    perfumeController.eliminarPerfume
+    perfumeController.darBajaPerfume
+);
+
+router.patch(
+    '/:id/reactivar',
+    verificarToken,
+    permitirRoles('admin'),
+    perfumeController.reactivarPerfume
 );
 
 module.exports = router;

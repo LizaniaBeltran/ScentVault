@@ -53,14 +53,14 @@
             </div>
             <button id="sidebar-toggle" class="collapse-button" type="button" aria-label="Colapsar menú">Menú</button>
             <nav class="nav-menu" aria-label="Navegación principal">
-                <button class="nav-link is-active" type="button" data-view="dashboard"><span>□</span><b>Dashboard</b></button>
-                <button class="nav-link" type="button" data-view="perfumes"><span>▱</span><b>Perfumes</b></button>
-                <button class="nav-link" type="button" data-view="clientes"><span>○</span><b>Clientes</b></button>
-                <button class="nav-link" type="button" data-view="ventas"><span>▰</span><b>Ventas</b></button>
-                <button class="nav-link" type="button" data-view="inventario"><span>◇</span><b>Inventario</b></button>
-                <button class="nav-link admin-only" type="button" data-view="reportes"><span>▥</span><b>Reportes</b></button>
-                <button class="nav-link admin-only" type="button" data-view="configuracion"><span>◎</span><b>Configuración</b></button>
-                <button class="nav-link admin-only" type="button" data-view="usuarios"><span>👥</span><b>Usuarios</b></button>
+                <button class="nav-link is-active" type="button" data-view="dashboard"><span>⊞</span><b>Dashboard</b></button>
+                <button class="nav-link" type="button" data-view="perfumes"><span>♢</span><b>Perfumes</b></button>
+                <button class="nav-link" type="button" data-view="clientes"><span>●</span><b>Clientes</b></button>
+                <button class="nav-link" type="button" data-view="ventas"><span>✦</span><b>Ventas</b></button>
+                <button class="nav-link" type="button" data-view="inventario"><span>◈</span><b>Inventario</b></button>
+                <button class="nav-link admin-only" type="button" data-view="reportes"><span>▦</span><b>Reportes</b></button>
+                <button class="nav-link admin-only" type="button" data-view="configuracion"><span>⚙</span><b>Configuración</b></button>
+                <button class="nav-link admin-only" type="button" data-view="usuarios"><span>⊕</span><b>Usuarios</b></button>
             </nav>
             <div class="sidebar-profile">
                 <div class="profile-avatar" id="profile-avatar-initial">A</div>
@@ -90,12 +90,42 @@
 
             <section id="dashboard-section" class="view-section">
                 <div class="stats-grid dashboard-kpis">
-                    <article class="stat-card"><span>Ventas del día</span><strong id="stat-ingresos">$0.00</strong><small>↑ 18.5% vs ayer</small></article>
-                    <article class="stat-card"><span>Ventas del mes</span><strong id="stat-mes">$0.00</strong><small>Acumulado mensual</small></article>
-                    <article class="stat-card"><span>Clientes</span><strong id="stat-clientes">0</strong><small>Registrados</small></article>
-                    <article class="stat-card"><span>Perfumes</span><strong id="stat-perfumes">0</strong><small>En inventario</small></article>
-                    <article class="stat-card"><span>Productos agotados</span><strong id="stat-agotados">0</strong><small>Requieren reorden</small></article>
-                    <article class="stat-card"><span>Valor inventario</span><strong id="stat-inventario">$0.00</strong><small>Disponible</small></article>
+                    <article class="stat-card">
+                        <div class="stat-icon stat-icon-gold">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                        </div>
+                        <span>Ventas del día</span><strong id="stat-ingresos">$0</strong>
+                    </article>
+                    <article class="stat-card">
+                        <div class="stat-icon stat-icon-wine">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                        </div>
+                        <span>Ventas del mes</span><strong id="stat-mes">$0</strong>
+                    </article>
+                    <article class="stat-card">
+                        <div class="stat-icon stat-icon-gold">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </div>
+                        <span>Clientes activos</span><strong id="stat-clientes">0</strong>
+                    </article>
+                    <article class="stat-card">
+                        <div class="stat-icon stat-icon-wine">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        </div>
+                        <span>Perfumes activos</span><strong id="stat-perfumes">0</strong>
+                    </article>
+                    <article class="stat-card">
+                        <div class="stat-icon" style="color:#cb2431">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                        </div>
+                        <span>Agotados</span><strong id="stat-agotados">0</strong>
+                    </article>
+                    <article class="stat-card">
+                        <div class="stat-icon stat-icon-gold">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+                        </div>
+                        <span>Valor inventario</span><strong id="stat-inventario">$0</strong>
+                    </article>
                 </div>
                 <div class="dashboard-grid-main">
                     <article class="panel chart-panel sales-chart-card">
@@ -107,22 +137,16 @@
                                 <path class="line" d="M40 190 L145 155 L250 128 L355 118 L460 76 L565 124 L680 102"/>
                                 <g class="points"><circle cx="40" cy="190"/><circle cx="145" cy="155"/><circle cx="250" cy="128"/><circle cx="355" cy="118"/><circle cx="460" cy="76"/><circle cx="565" cy="124"/><circle cx="680" cy="102"/></g>
                             </svg>
-                            <div class="chart-labels"><span>18 May</span><span>19 May</span><span>20 May</span><span>21 May</span><span>22 May</span><span>23 May</span><span>24 May</span></div>
-                        </div>
-                    </article>
-                    <article class="panel best-sellers-card">
-                        <div class="panel-header"><h3>Perfumes más vendidos</h3></div>
-                        <div class="product-list" id="top-perfumes">
-                            <div><img src="assets/img/perfume.png" alt="Bleu de Chanel"><p><strong>Bleu de Chanel Parfum</strong><span>Chanel</span></p><b>28</b></div>
-                            <div><img src="assets/img/perfume.png" alt="Sauvage Elixir"><p><strong>Sauvage Elixir</strong><span>Dior</span></p><b>24</b></div>
-                            <div><img src="assets/img/perfume.png" alt="Aventus Creed"><p><strong>Aventus Creed</strong><span>Creed</span></p><b>21</b></div>
-                            <div><img src="assets/img/perfume.png" alt="Tom Ford Noir"><p><strong>Tom Ford Noir Extreme</strong><span>Tom Ford</span></p><b>18</b></div>
+                            <div class="chart-labels"><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span></div>
                         </div>
                     </article>
                     <article class="panel latest-sales-card">
+                        <div class="panel-header"><h3>Actividad reciente</h3></div>
+                        <div id="recent-activity" class="timeline"></div>
+                    </article>
+                    <article class="panel latest-sales-card">
                         <div class="panel-header"><h3>Últimas ventas</h3></div>
-                        <div class="sales-table-preview"><table><thead><tr><th>ID Venta</th><th>Cliente</th><th>Productos</th><th>Total</th><th>Fecha</th></tr></thead><tbody><tr><td>#VTA-000123</td><td>María González</td><td>2 productos</td><td>$2,850.00</td><td>24/05/2025</td></tr><tr><td>#VTA-000122</td><td>José Ramírez</td><td>3 productos</td><td>$4,190.00</td><td>24/05/2025</td></tr><tr><td>#VTA-000121</td><td>Ana López</td><td>1 producto</td><td>$1,450.00</td><td>24/05/2025</td></tr></tbody></table></div>
-                        <div id="recent-sales" class="timeline dashboard-hidden-feed"></div>
+                        <div id="recent-sales" class="timeline"></div>
                     </article>
                     <article class="panel stock-card">
                         <div class="panel-header"><h3>Stock bajo</h3></div>
@@ -132,8 +156,30 @@
             </section>
 
             <section id="perfumes-section" class="view-section is-hidden">
-                <div class="section-layout">
-                    <article class="panel form-panel">
+                <div class="perfumes-catalog-shell">
+                    <div class="perfumes-toolbar panel">
+                        <div class="perfume-search-field">
+                            <input id="perfumes-search" type="search" placeholder="Buscar perfume por nombre o marca...">
+                            <span>⌕</span>
+                        </div>
+                        <select id="perfumes-filter" class="filter-select">
+                            <option value="activos">Estado: Activos</option>
+                            <option value="inactivos">Estado: Inactivos</option>
+                            <option value="todos">Estado: Todos</option>
+                        </select>
+                        <select id="perfumes-family-filter" class="filter-select">
+                            <option value="">Familia olfativa: Todas</option>
+                        </select>
+                        <select id="perfumes-brand-filter" class="filter-select">
+                            <option value="">Marca: Todas</option>
+                        </select>
+                        <button id="show-perfume-form" class="primary-button" type="button">+ Agregar perfume</button>
+                        <button id="reload-perfumes" class="secondary-button" type="button">Recargar</button>
+                    </div>
+
+                    <div id="perfumes-kpis" class="perfumes-kpis"></div>
+
+                    <article id="perfume-form-panel" class="panel form-panel perfume-form-panel is-hidden">
                         <div class="panel-header">
                             <div>
                                 <p class="eyebrow">Catálogo</p>
@@ -146,28 +192,24 @@
                             <label>Marca<input name="marca" required></label>
                             <label>Familia olfativa<input name="familia_olfativa" required></label>
                             <label>Temporada<input name="temporada"></label>
-                            <label>Duracion horas<input name="duracion_horas" type="number" min="0" step="0.1"></label>
+                            <label>Duración (horas)<input name="duracion_horas" type="number" min="0" step="0.1"></label>
                             <label>Precio<input name="precio" type="number" min="1" step="0.01" required></label>
                             <label>Stock<input name="stock" type="number" min="0" step="1" required></label>
                             <label>Imagen <input id="perfume-imagen" name="imagen" type="file" accept="image/jpeg,image/jpg,image/png,image/webp"></label>
                             <div id="imagen-preview" class="imagen-preview"></div>
-                            <label class="full">Notas salida<textarea name="notas_salida" rows="2"></textarea></label>
+                            <label class="full">Notas de salida<textarea name="notas_salida" rows="2"></textarea></label>
                             <label class="full">Notas medias<textarea name="notas_medias" rows="2"></textarea></label>
-                            <label class="full">Notas fondo<textarea name="notas_fondo" rows="2"></textarea></label>
-                            <label class="full">Descripcion<textarea name="descripcion" rows="3"></textarea></label>
+                            <label class="full">Notas de fondo<textarea name="notas_fondo" rows="2"></textarea></label>
+                            <label class="full">Descripción<textarea name="descripcion" rows="3"></textarea></label>
                             <div class="form-actions full">
                                 <button class="primary-button" type="submit">Guardar perfume</button>
                                 <button id="cancel-perfume-edit" class="ghost-button" type="button">Limpiar</button>
                             </div>
                         </form>
                     </article>
-                    <article class="panel table-panel">
-                        <div class="panel-header">
-                            <h3>Perfumes</h3>
-                            <button id="reload-perfumes" class="secondary-button" type="button">Recargar</button>
-                        </div>
-                        <div id="perfumes-list" class="cards-list"></div>
-                    </article>
+
+                    <div id="perfumes-list" class="premium-cards perfumes-catalog-grid"></div>
+                    <div class="perfumes-pagination"><span id="perfumes-count-label">Mostrando perfumes</span><div><button type="button">‹</button><button class="is-active" type="button">1</button><button type="button">2</button><button type="button">3</button><button type="button">›</button></div></div>
                 </div>
             </section>
 
@@ -195,7 +237,13 @@
                     <article class="panel table-panel">
                         <div class="panel-header">
                             <h3>Clientes</h3>
-                            <button id="reload-clientes" class="secondary-button" type="button">Recargar</button>
+                            <div class="panel-controls">
+                                <select id="clientes-filter" class="filter-select">
+                                    <option value="activos">Activos</option>
+                                    <option value="inactivos">Inactivos</option>
+                                </select>
+                                <button id="reload-clientes" class="secondary-button" type="button">Recargar</button>
+                            </div>
                         </div>
                         <label class="search-box">Buscar cliente<input id="cliente-search" type="search" placeholder="Nombre, correo o preferencia"></label>
                         <div class="table-scroll">
@@ -206,7 +254,7 @@
                                         <th>Teléfono</th>
                                         <th>Correo</th>
                                         <th>Preferencia</th>
-                                        <th></th>
+                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody id="clientes-table"></tbody>
@@ -217,36 +265,60 @@
             </section>
 
             <section id="ventas-section" class="view-section is-hidden">
-                <div class="section-layout">
-                    <article class="panel form-panel">
-                        <div class="panel-header">
-                            <div>
-                                <p class="eyebrow">Punto de venta</p>
-                                <h3>Nueva venta</h3>
+                <div class="ventas-pos-grid">
+                    <article class="panel pos-panel pos-catalog-panel">
+                        <div class="pos-panel-title"><span></span><h3>Buscar perfume</h3></div>
+                        <div class="pos-search-row">
+                            <div class="buscador-perfumes pos-search">
+                                <input id="venta-buscar" type="search" placeholder="Buscar por nombre o marca..." autocomplete="off">
+                                <div id="venta-resultados" class="resultados-busqueda"></div>
                             </div>
+                            <button class="secondary-button pos-filter-button" type="button">Filtros</button>
                         </div>
-                        <form id="venta-form" class="grid-form">
+                        <div class="pos-category-tabs" id="venta-categorias">
+                            <button class="is-active" type="button" data-sale-family="">Todos</button>
+                            <button type="button" data-sale-family="Dulces">Dulces</button>
+                            <button type="button" data-sale-family="Cítricos">Cítricos</button>
+                            <button type="button" data-sale-family="Amaderados">Amaderados</button>
+                            <button type="button" data-sale-family="Aromáticos">Aromáticos</button>
+                            <button type="button" data-sale-family="Fougère">Fougère</button>
+                        </div>
+                        <div id="venta-productos-grid" class="venta-productos-grid"></div>
+                    </article>
+
+                    <article class="panel pos-panel pos-cart-panel">
+                        <div class="pos-panel-title pos-cart-title"><span></span><h3>Carrito de compra</h3><button id="clear-cart-button" class="pos-trash" type="button">🗑</button></div>
+                        <div id="sale-items" class="sale-items pos-sale-items">
+                            <div class="cart-empty">Carrito vacío. Busca y agrega perfumes.</div>
+                        </div>
+                        <button id="empty-cart-button" class="secondary-button pos-empty-cart" type="button">Vaciar carrito</button>
+                    </article>
+
+                    <article class="panel pos-panel pos-summary-panel">
+                        <div class="pos-panel-title"><span></span><h3>Resumen de venta</h3></div>
+                        <div id="cart-resumen" class="cart-resumen pos-cart-resumen is-hidden">
+                            <div class="cart-line"><span>Subtotal</span><strong id="cart-subtotal">$0.00</strong></div>
+                            <div class="cart-line"><span>IVA (16%)</span><strong id="cart-iva">$0.00</strong></div>
+                            <div class="cart-line cart-total"><span>Total a pagar</span><strong id="cart-total">$0.00</strong></div>
+                        </div>
+                        <form id="venta-form" class="pos-summary-form">
                             <label>Cliente<select name="cliente_id" id="venta-cliente"></select></label>
                             <label>Método de pago
                                 <select name="metodo_pago" required>
-                                    <option value="">Seleccionar</option>
                                     <option value="efectivo">Efectivo</option>
                                     <option value="tarjeta">Tarjeta</option>
                                     <option value="transferencia">Transferencia</option>
                                 </select>
                             </label>
-                            <label>Perfume<select id="venta-perfume"></select></label>
-                            <label>Cantidad<input id="venta-cantidad" type="number" min="1" step="1" value="1"></label>
-                            <div class="form-actions full">
-                                <button id="add-product" class="secondary-button" type="button">Agregar producto</button>
-                                <button class="primary-button" type="submit">Registrar venta</button>
-                            </div>
+                            <label>Notas (opcional)<textarea name="notas" rows="3" placeholder="Agregar notas de la venta..."></textarea></label>
+                            <button class="primary-button pos-complete-button" type="submit">Completar venta</button>
                         </form>
-                        <div id="sale-items" class="sale-items"></div>
                     </article>
-                    <article class="panel table-panel">
+                </div>
+
+                <article class="panel table-panel ventas-recientes-panel">
                         <div class="panel-header">
-                            <h3>Ventas</h3>
+                            <h3>Ventas recientes</h3>
                             <button id="reload-ventas" class="secondary-button" type="button">Recargar</button>
                         </div>
                         <div class="table-scroll">
@@ -256,16 +328,17 @@
                                         <th>ID</th>
                                         <th>Cliente</th>
                                         <th>Vendedor</th>
-                                        <th>Pago</th>
+                                        <th>Productos</th>
                                         <th>Total</th>
+                                        <th>Método</th>
                                         <th>Fecha</th>
+                                        <th>Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody id="ventas-table"></tbody>
                             </table>
                         </div>
-                    </article>
-                </div>
+                </article>
             </section>
 
             <section id="inventario-section" class="view-section is-hidden">
@@ -273,64 +346,88 @@
                     <h2>Inventario</h2>
                     <p class="section-subtitle">Gestiona el stock de perfumes</p>
                 </div>
-                <article class="panel table-panel">
-                    <div class="panel-header">
-                        <div>
-                            <h3>Estado del inventario</h3>
-                        </div>
-                        <div class="panel-controls">
-                            <label class="search-box">Buscar<input id="inventario-search" type="search" placeholder="Nombre o marca"></label>
-                            <select id="inventario-filter" class="filter-select">
-                                <option value="">Todos los estados</option>
-                                <option value="disponible">Disponible</option>
-                                <option value="bajo">Stock bajo</option>
-                                <option value="agotado">Agotado</option>
-                            </select>
-                            <button id="reload-inventario" class="secondary-button" type="button">Recargar</button>
-                        </div>
+                <div class="inventario-kpis" id="inventario-resumen"></div>
+                <div class="inventario-toolbar panel">
+                    <label class="inventario-search">Buscar<input id="inventario-search" type="search" placeholder="Buscar perfume por nombre o marca..."></label>
+                    <select id="inventario-marca" class="filter-select"><option value="">Todas las marcas</option></select>
+                    <select id="inventario-filter" class="filter-select">
+                        <option value="">Todos los estados</option>
+                        <option value="disponible">Disponible</option>
+                        <option value="bajo">Bajo stock</option>
+                        <option value="agotado">Agotado</option>
+                        <option value="inactivo">Inactivo</option>
+                    </select>
+                    <select id="inventario-orden" class="filter-select">
+                        <option value="">Ordenar</option>
+                        <option value="stock_asc">Stock ↑</option>
+                        <option value="stock_desc">Stock ↓</option>
+                        <option value="precio_asc">Precio ↑</option>
+                        <option value="precio_desc">Precio ↓</option>
+                    </select>
+                    <button id="reload-inventario" class="secondary-button" type="button">Recargar</button>
+                </div>
+                <div class="inventario-layout">
+                    <div>
+                        <div id="inventario-cards" class="inventario-cards"></div>
+                        <table style="display:none"><tbody id="inventario-table"></tbody></table>
+                        <div class="inventario-pagination"><span id="inventario-count-label">Mostrando productos</span><div><button type="button">‹</button><button class="is-active" type="button">1</button><button type="button">2</button><button type="button">3</button><button type="button">›</button></div></div>
                     </div>
-                    <div class="table-scroll">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Perfume</th>
-                                    <th>Marca</th>
-                                    <th>Stock actual</th>
-                                    <th>Stock mínimo</th>
-                                    <th>Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody id="inventario-table"></tbody>
-                        </table>
-                    </div>
-                </article>
+                    <aside class="inventario-side">
+                        <article class="panel inventario-chart-card"><h3>Estado del inventario</h3><div id="inventario-donut" class="inventario-donut"></div></article>
+                        <article class="panel inventario-chart-card"><h3>Valor de inventario por marca</h3><div id="inventario-brand-chart" class="inventario-brand-chart"></div></article>
+                        <article class="panel inventario-alert-card"><h3>Alertas de inventario</h3><div id="inventario-alertas"></div></article>
+                    </aside>
+                </div>
             </section>
 
             <section id="reportes-section" class="view-section is-hidden admin-only">
-                <div class="section-header">
-                    <h2>Reportes</h2>
-                    <p class="section-subtitle">Análisis y estadísticas del negocio</p>
-                </div>
-                <div class="reports-grid">
-                    <article class="panel chart-panel">
-                        <div class="panel-header"><h3>Ventas por mes</h3></div>
-                        <div id="monthly-chart" class="chart-placeholder"></div>
-                    </article>
-                    <article class="panel chart-panel">
-                        <div class="panel-header"><h3>Perfumes más vendidos</h3></div>
-                        <div id="top-perfumes-chart" class="chart-placeholder"></div>
-                    </article>
-                    <article class="panel">
-                        <div class="panel-header">
-                            <h3>Resumen de reportes</h3>
-                            <div class="panel-controls">
-                                <button id="export-pdf" class="secondary-button" type="button">📄 PDF</button>
-                                <button id="export-excel" class="secondary-button" type="button">📊 Excel</button>
-                            </div>
+                <div class="reports-hero">
+                    <div>
+                        <h2>Reportes</h2>
+                        <p class="section-subtitle">Análisis completo del rendimiento de tu perfumería</p>
+                    </div>
+                    <div class="reports-actions">
+                        <div class="report-date-picker">
+                            <label>Desde<input id="report-fecha-inicio" type="date"></label>
+                            <label>Hasta<input id="report-fecha-fin" type="date"></label>
+                            <button id="apply-report-range" class="secondary-button" type="button">Aplicar</button>
+                            <button id="clear-report-range" class="secondary-button" type="button">Limpiar</button>
                         </div>
-                        <div id="reports-summary" class="stats-grid"></div>
+                        <span id="report-date-range" class="report-range-label">Últimos 30 días</span>
+                        <button id="export-pdf" class="primary-button" type="button">Exportar PDF</button>
+                        <button id="export-excel" class="secondary-button" type="button">Exportar Excel</button>
+                    </div>
+                </div>
+                <div class="reportes-kpis" id="reportes-kpis"></div>
+                <div class="reportes-main-grid">
+                    <article class="panel report-card report-sales-card">
+                        <div class="panel-header"><h3>Ventas últimos 30 días</h3><select class="filter-select"><option>30 días</option></select></div>
+                        <div id="ventas-chart" class="chart-container"><canvas id="ventasChartCanvas"></canvas></div>
+                    </article>
+                    <article class="panel report-card report-category-card">
+                        <div class="panel-header"><h3>Ventas por categoría</h3></div>
+                        <div id="report-category-chart" class="report-category-chart"></div>
+                    </article>
+                    <article class="panel report-card report-top-card">
+                        <div class="panel-header"><h3>Perfumes más vendidos</h3><select class="filter-select"><option>Top 5</option></select></div>
+                        <div id="top-perfumes-report" class="top-perfumes-report"></div>
+                        <div id="top-chart" class="chart-container is-hidden"><canvas id="topChartCanvas"></canvas></div>
+                    </article>
+                    <article class="panel report-card report-sales-table">
+                        <div class="panel-header"><h3>Ventas recientes</h3><button class="secondary-button" type="button">Ver todas</button></div>
+                        <div class="table-scroll"><table><thead><tr><th>ID</th><th>Fecha</th><th>Cliente</th><th>Productos</th><th>Método</th><th>Total</th><th></th></tr></thead><tbody id="report-ventas-table"></tbody></table></div>
+                    </article>
+                    <article class="panel report-card report-inventory-card">
+                        <div class="panel-header"><h3>Resumen de inventario</h3><button class="secondary-button" type="button">Ver inventario</button></div>
+                        <div id="report-inventory-summary" class="report-inventory-summary"></div>
                     </article>
                 </div>
+                <div class="report-bottom-grid">
+                    <article class="panel report-insight" id="report-insight"></article>
+                    <article class="panel report-mini-metrics" id="report-mini-metrics"></article>
+                </div>
+                <div id="alertas-inventario" class="compact-list is-hidden"></div>
+                <table class="mini-table is-hidden"><tbody id="clientes-frecuentes-table"></tbody></table>
             </section>
 
             <section id="configuracion-section" class="view-section is-hidden admin-only">
@@ -420,6 +517,33 @@
     </main>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <div id="modal-overlay" class="modal-overlay is-hidden">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="modal-title">Detalle</h3>
+                <button id="modal-close" class="ghost-button" type="button">&times;</button>
+            </div>
+            <div id="modal-body" class="modal-body"></div>
+        </div>
+    </div>
+
+    <div id="confirm-overlay" class="modal-overlay is-hidden">
+        <div class="modal-box modal-sm">
+            <div class="modal-header">
+                <h3 id="confirm-title">Confirmar</h3>
+            </div>
+            <div id="confirm-body" class="modal-body">
+                <p id="confirm-message">¿Estás seguro?</p>
+                <div class="form-actions full">
+                    <button id="confirm-yes" class="primary-button" type="button">Sí</button>
+                    <button id="confirm-no" class="ghost-button" type="button">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

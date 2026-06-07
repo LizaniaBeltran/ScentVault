@@ -121,12 +121,16 @@ const actualizarPerfume = async (req, res) => {
     }
 };
 
-const eliminarPerfume = async (req, res) => {
+const darBajaPerfume = async (req, res) => {
     try {
         const { id } = req.params;
-        const perfumeEliminado = await Perfume.findByIdAndDelete(id);
+        const perfume = await Perfume.findByIdAndUpdate(
+            id,
+            { activo: false },
+            { new: true }
+        );
 
-        if (!perfumeEliminado) {
+        if (!perfume) {
             return res.status(404).json({
                 ok: false,
                 error: 'Perfume no encontrado'
@@ -135,14 +139,61 @@ const eliminarPerfume = async (req, res) => {
 
         res.json({
             ok: true,
-            message: 'Perfume eliminado correctamente',
-            data: perfumeEliminado
+            message: 'Perfume dado de baja correctamente',
+            data: perfume
         });
     } catch (error) {
-        console.error('Error al eliminar perfume:', error);
+        console.error('Error al dar de baja perfume:', error);
         res.status(500).json({
             ok: false,
-            error: 'Error al eliminar perfume'
+            error: 'Error al dar de baja perfume'
+        });
+    }
+};
+
+const reactivarPerfume = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const perfume = await Perfume.findByIdAndUpdate(
+            id,
+            { activo: true },
+            { new: true }
+        );
+
+        if (!perfume) {
+            return res.status(404).json({
+                ok: false,
+                error: 'Perfume no encontrado'
+            });
+        }
+
+        res.json({
+            ok: true,
+            message: 'Perfume reactivado correctamente',
+            data: perfume
+        });
+    } catch (error) {
+        console.error('Error al reactivar perfume:', error);
+        res.status(500).json({
+            ok: false,
+            error: 'Error al reactivar perfume'
+        });
+    }
+};
+
+const obtenerPerfumesInactivos = async (req, res) => {
+    try {
+        const perfumes = await Perfume.find({ activo: false }).sort({ createdAt: -1 });
+
+        res.json({
+            ok: true,
+            data: perfumes
+        });
+    } catch (error) {
+        console.error('Error al obtener perfumes inactivos:', error);
+        res.status(500).json({
+            ok: false,
+            error: 'Error al obtener perfumes inactivos'
         });
     }
 };
@@ -152,5 +203,7 @@ module.exports = {
     obtenerPerfumePorId,
     crearPerfume,
     actualizarPerfume,
-    eliminarPerfume
+    darBajaPerfume,
+    reactivarPerfume,
+    obtenerPerfumesInactivos
 };

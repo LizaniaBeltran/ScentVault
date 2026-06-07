@@ -18,6 +18,18 @@ router.get(
     ventaController.obtenerVentas
 );
 
+router.get(
+    '/buscar-perfumes',
+    verificarToken,
+    ventaController.buscarPerfumesVenta
+);
+
+router.get(
+    '/:id',
+    verificarToken,
+    ventaController.obtenerVentaPorId
+);
+
 router.post(
     '/',
     verificarToken,
