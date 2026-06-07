@@ -129,7 +129,7 @@ async function handleLogin(event) {
     const formData = new FormData(event.currentTarget);
     message.textContent = '';
     try {
-        const response = await fetch(`${API_BASE}/auth/login`, {
+        const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(Object.fromEntries(formData.entries()))
@@ -236,7 +236,7 @@ async function loadAll() {
 }
 
 async function apiRequest(path, options = {}) {
-    const response = await fetch(`${API_BASE}${path}`, {
+    const response = await fetch(`${API_URL}${path}`, {
         ...options,
         headers: {
             'Content-Type': 'application/json',
@@ -618,7 +618,7 @@ async function savePerfume(event) {
         if (formData.get('duracion_horas')) formData.set('duracion_horas', Number(formData.get('duracion_horas')));
         formData.delete('id');
         try {
-            const response = await fetch(`${API_BASE}${id ? `/perfumes/${id}` : '/perfumes'}`, {
+            const response = await fetch(`${API_URL}${id ? `/perfumes/${id}` : '/perfumes'}`, {
                 method: id ? 'PUT' : 'POST',
                 headers: { Authorization: `Bearer ${state.token}` },
                 body: formData
@@ -1602,7 +1602,7 @@ function exportPDF() {
     setDefaultReportRange();
     toast('Generando PDF...', 'info');
     const link = document.createElement('a');
-    const url = `${API_BASE}/export/pdf${getReportRangeQuery()}`;
+    const url = `${API_URL}/export/pdf${getReportRangeQuery()}`;
     link.href = url;
     link.download = 'ScentVault_Reporte.pdf';
     fetch(url, { headers: { Authorization: `Bearer ${state.token}` } })
@@ -1615,7 +1615,7 @@ function exportExcel() {
     setDefaultReportRange();
     toast('Generando Excel...', 'info');
     const link = document.createElement('a');
-    const url = `${API_BASE}/export/excel${getReportRangeQuery()}`;
+    const url = `${API_URL}/export/excel${getReportRangeQuery()}`;
     link.href = url;
     link.download = 'ScentVault_Reporte.xlsx';
     fetch(url, { headers: { Authorization: `Bearer ${state.token}` } })
