@@ -405,40 +405,60 @@ async function savePerfume(event) {
     event.preventDefault();
     const form = event.currentTarget;
     const id = form.querySelector('input[name="id"]').value;
+    const fileInput = form.querySelector('input[name="imagen"]');
+    const tieneArchivo = fileInput?.files?.length > 0;
     
-    // Crear FormData en lugar de JSON
-    const formData = new FormData(form);
-    
-    // Convertir datos numéricos
-    const precio = formData.get('precio');
-    const stock = formData.get('stock');
-    const duracion_horas = formData.get('duracion_horas');
-    
-    if (precio) formData.set('precio', Number(precio));
-    if (stock) formData.set('stock', Number(stock));
-    if (duracion_horas) formData.set('duracion_horas', Number(duracion_horas));
-    
-    // Remover el campo id de FormData (va en la URL)
-    formData.delete('id');
-    
-    try {
-        const response = await fetch(`${API_BASE}${id ? `/perfumes/${id}` : '/perfumes'}`, {
-            method: id ? 'PUT' : 'POST',
-            headers: {
-                'Authorization': `Bearer ${state.token}`
-            },
-            body: formData
-        });
+    if (tieneArchivo) {
+        const formData = new FormData(form);
         
-        const data = await response.json();
-        if (!response.ok || !data.ok) throw new Error(readApiError(data));
+        formData.set('precio', Number(formData.get('precio') || 0));
+        formData.set('stock', Number(formData.get('stock') || 0));
+        if (formData.get('duracion_horas')) formData.set('duracion_horas', Number(formData.get('duracion_horas')));
         
-        resetPerfumeForm();
-        await loadPerfumes();
-        await loadDashboard();
-        toast('Perfume guardado correctamente', 'success');
-    } catch (error) {
-        toast(error.message, 'error');
+        formData.delete('id');
+        
+        try {
+            const response = await fetch(`${API_BASE}${id ? `/perfumes/${id}` : '/perfumes'}`, {
+                method: id ? 'PUT' : 'POST',
+                headers: { 'Authorization': `Bearer ${state.token}` },
+                body: formData
+            });
+            
+            const data = await response.json();
+            if (!response.ok || !data.ok) throw new Error(readApiError(data));
+            
+            resetPerfumeForm();
+            await loadPerfumes();
+            await loadDashboard();
+            toast('Perfume guardado correctamente', 'success');
+        } catch (error) {
+            toast(error.message, 'error');
+        }
+    } else {
+        const payload = formPayload(form);
+        const idVal = payload.id;
+        delete payload.id;
+        
+        try {
+            const response = await fetch(`${API_BASE}${idVal ? `/perfumes/${idVal}` : '/perfumes'}`, {
+                method: idVal ? 'PUT' : 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${state.token}`
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            const data = await response.json();
+            if (!response.ok || !data.ok) throw new Error(readApiError(data));
+            
+            resetPerfumeForm();
+            await loadPerfumes();
+            await loadDashboard();
+            toast('Perfume guardado correctamente', 'success');
+        } catch (error) {
+            toast(error.message, 'error');
+        }
     }
 }
 
