@@ -5551,3 +5551,425 @@ body[data-role="vendedor"] .dashboard-activity-panel {
         height: 230px;
     }
 }
+
+/* Responsive final ScentVault */
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+img,
+svg,
+canvas,
+video {
+    max-width: 100%;
+}
+
+.sidebar-overlay {
+    display: none;
+}
+
+.workspace,
+.view-section,
+.panel,
+.table-panel,
+.form-panel,
+.report-card,
+.stat-card,
+.premium-card {
+    min-width: 0;
+}
+
+.table-scroll {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll table {
+    width: 100%;
+    min-width: 680px;
+}
+
+.grid-form,
+.cliente-grid-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.form-actions,
+.cliente-form-actions,
+.panel-controls,
+.reports-actions,
+.perfumes-toolbar,
+.inventario-toolbar,
+.clientes-toolbar,
+.pos-search-row {
+    min-width: 0;
+    flex-wrap: wrap;
+}
+
+.primary-button,
+.secondary-button,
+.ghost-button,
+.filter-select,
+input,
+select,
+textarea,
+button {
+    max-width: 100%;
+}
+
+@media (max-width: 1200px) {
+    #app-view.app-shell {
+        grid-template-columns: 248px minmax(0, 1fr);
+    }
+
+    #app-view .workspace {
+        padding: 24px;
+    }
+
+    #dashboard-section .dashboard-kpis-luxe,
+    .perfumes-kpis,
+    .inventario-kpis,
+    .clientes-kpis,
+    .reportes-kpis {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .dashboard-luxe-grid,
+    .reportes-main-grid,
+    .inventario-layout,
+    .ventas-pos-grid,
+    .clientes-workspace,
+    .section-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .dashboard-top-panel,
+    .dashboard-activity-panel,
+    .report-sales-table,
+    .report-inventory-card {
+        grid-column: auto;
+        grid-row: auto;
+    }
+}
+
+@media (max-width: 1024px) {
+    #app-view.app-shell {
+        grid-template-columns: 232px minmax(0, 1fr);
+    }
+
+    #app-view .sidebar-brand img {
+        width: 158px;
+    }
+
+    #app-view .workspace {
+        padding: 22px 18px;
+    }
+
+    #app-view .topbar {
+        align-items: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    #app-view .topbar h2 {
+        font-size: clamp(1.7rem, 4vw, 2.25rem);
+    }
+
+    #dashboard-section .dashboard-kpis-luxe,
+    body[data-role="vendedor"] #dashboard-section .dashboard-kpis-luxe,
+    .perfumes-kpis,
+    .inventario-kpis,
+    .clientes-kpis,
+    .reportes-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .premium-cards,
+    .perfumes-catalog-grid,
+    .inventario-cards,
+    .venta-productos-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dashboard-activity-columns,
+    .report-bottom-grid,
+    .report-mini-metrics,
+    .dashboard-bottom-metrics,
+    .settings-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    #app-view.app-shell,
+    #app-view.app-shell.sidebar-collapsed {
+        display: block;
+        grid-template-columns: 1fr;
+    }
+
+    #app-view .collapse-button {
+        display: inline-flex;
+        position: fixed;
+        top: 14px;
+        left: 14px;
+        z-index: 1201;
+        width: auto;
+        min-height: 42px;
+        align-items: center;
+        justify-content: center;
+        padding: 0 14px;
+        border: 1px solid rgba(139, 15, 47, 0.18);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.96);
+        color: var(--wine);
+        box-shadow: 0 12px 30px rgba(17, 17, 17, 0.12);
+        font-weight: 800;
+    }
+
+    #app-view .collapse-button::before {
+        content: '☰';
+        margin-right: 8px;
+        font-size: 1.05rem;
+    }
+
+    #app-view .sidebar,
+    #app-view.app-shell.sidebar-collapsed .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1200;
+        width: min(82vw, 310px);
+        height: 100dvh;
+        transform: translateX(-105%);
+        transition: transform 0.25s ease;
+        overflow-y: auto;
+        padding-top: 68px;
+    }
+
+    #app-view.sidebar-open .sidebar {
+        transform: translateX(0);
+    }
+
+    #app-view .sidebar-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 1190;
+        border: 0;
+        background: rgba(17, 17, 17, 0.42);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+    }
+
+    #app-view.sidebar-open .sidebar-overlay {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    #app-view .workspace {
+        width: 100%;
+        padding: 76px 16px 22px;
+    }
+
+    #app-view .topbar {
+        padding-bottom: 18px;
+    }
+
+    #app-view .topbar-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    #app-view .date-chip {
+        width: auto;
+        min-width: 0;
+    }
+
+    .login-card {
+        width: min(100%, 460px);
+    }
+
+    .reports-hero,
+    .perfumes-toolbar,
+    .inventario-toolbar,
+    .clientes-toolbar,
+    .pos-search-row,
+    .panel-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .reports-actions,
+    .report-date-picker {
+        width: 100%;
+    }
+
+    .report-date-picker label,
+    .report-date-picker button,
+    .reports-actions > button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    #dashboard-section .dashboard-kpis-luxe,
+    body[data-role="vendedor"] #dashboard-section .dashboard-kpis-luxe,
+    .perfumes-kpis,
+    .inventario-kpis,
+    .clientes-kpis,
+    .reportes-kpis,
+    .dashboard-activity-columns,
+    .report-bottom-grid,
+    .report-mini-metrics,
+    .dashboard-bottom-metrics,
+    .settings-grid,
+    .grid-form,
+    .cliente-grid-form,
+    .ventas-pos-grid,
+    .clientes-workspace,
+    .section-layout,
+    .inventario-layout,
+    .reportes-main-grid,
+    .dashboard-luxe-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .premium-cards,
+    .perfumes-catalog-grid,
+    .inventario-cards,
+    .venta-productos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions,
+    .cliente-form-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions button,
+    .cliente-form-actions button,
+    .panel-controls button,
+    .panel-controls select,
+    .clientes-toolbar button,
+    .clientes-toolbar select,
+    .inventario-toolbar button,
+    .inventario-toolbar select,
+    .perfumes-toolbar button,
+    .perfumes-toolbar select,
+    .pos-summary-form button {
+        width: 100%;
+    }
+
+    .report-category-chart,
+    .report-inventory-summary,
+    .dashboard-category-chart {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+    }
+
+    .dashboard-activity-columns > div,
+    .dashboard-bottom-metrics article {
+        border-right: 0;
+        padding-right: 0;
+    }
+
+    .cart-item,
+    .dashboard-top-product,
+    .report-top-row {
+        min-width: 0;
+    }
+
+    .table-scroll table,
+    #reportes-section table {
+        min-width: 620px;
+    }
+}
+
+@media (max-width: 480px) {
+    #app-view .workspace {
+        padding: 72px 10px 18px;
+    }
+
+    #app-view .topbar h2 {
+        font-size: 1.8rem;
+        line-height: 1.05;
+    }
+
+    .dashboard-subtitle,
+    .section-subtitle {
+        font-size: 0.86rem;
+    }
+
+    .panel,
+    .stat-card,
+    .report-card,
+    .cliente-form-card,
+    .clientes-table-card,
+    .perfumes-toolbar,
+    .inventario-toolbar {
+        border-radius: 14px;
+        padding: 14px;
+    }
+
+    #dashboard-section .stat-card {
+        grid-template-columns: 44px minmax(0, 1fr);
+        min-height: 104px;
+        column-gap: 12px;
+    }
+
+    #dashboard-section .stat-card .stat-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 1.05rem;
+    }
+
+    #dashboard-section .stat-card strong,
+    .reportes-kpis strong,
+    .clientes-kpis strong,
+    .perfumes-kpis strong,
+    .inventario-kpis strong {
+        font-size: 1.25rem;
+    }
+
+    .dashboard-top-product {
+        grid-template-columns: 50px minmax(0, 1fr);
+    }
+
+    .dashboard-top-product b {
+        grid-column: 2;
+        text-align: left;
+    }
+
+    .cart-item {
+        grid-template-columns: 44px minmax(0, 1fr);
+        gap: 10px;
+    }
+
+    .ci-cantidad,
+    .ci-subtotal,
+    .ci-remove {
+        grid-column: 2;
+    }
+
+    .chart-container {
+        height: 220px;
+    }
+
+    .table-scroll table,
+    #reportes-section table {
+        min-width: 560px;
+    }
+
+    .modal-card,
+    .confirm-card {
+        width: calc(100vw - 20px);
+        max-width: calc(100vw - 20px);
+    }
+}

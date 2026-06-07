@@ -39,7 +39,12 @@ function bindEvents() {
     $('#reload-ventas').addEventListener('click', loadVentas);
     $('#reload-inventario')?.addEventListener('click', loadInventario);
     $('#reload-usuarios')?.addEventListener('click', loadUsuarios);
-    $('#sidebar-toggle').addEventListener('click', () => $('#app-view').classList.toggle('sidebar-collapsed'));
+    $('#sidebar-toggle').addEventListener('click', () => {
+        const app = $('#app-view');
+        if (window.matchMedia('(max-width: 900px)').matches) app.classList.toggle('sidebar-open');
+        else app.classList.toggle('sidebar-collapsed');
+    });
+    $('#sidebar-overlay')?.addEventListener('click', () => $('#app-view').classList.remove('sidebar-open'));
     $('#cliente-search').addEventListener('input', renderClientes);
     $('#perfumes-search')?.addEventListener('input', renderPerfumes);
     $('#perfumes-filter')?.addEventListener('change', loadPerfumes);
@@ -111,7 +116,10 @@ function bindEvents() {
     });
 
     $$('.nav-link').forEach((button) => {
-        button.addEventListener('click', () => switchView(button.dataset.view));
+        button.addEventListener('click', () => {
+            switchView(button.dataset.view);
+            $('#app-view').classList.remove('sidebar-open');
+        });
     });
 }
 
