@@ -20,15 +20,15 @@ const crearPerfume = async (perfume) => {
         perfume.nombre,
         perfume.marca,
         perfume.familia_olfativa,
-        perfume.notas_salida,
-        perfume.notas_medias,
-        perfume.notas_fondo,
-        perfume.temporada,
-        perfume.duracion_horas,
+        perfume.notas_salida || null,
+        perfume.notas_medias || null,
+        perfume.notas_fondo || null,
+        perfume.temporada || null,
+        perfume.duracion_horas || null,
         perfume.precio,
         perfume.stock,
-        perfume.imagen_url,
-        perfume.descripcion
+        perfume.imagen_url || null,
+        perfume.descripcion || null
     ];
 
     const result = await pool.query(query, values);
@@ -36,6 +36,16 @@ const crearPerfume = async (perfume) => {
 };
 
 const actualizarPerfume = async (id, perfume) => {
+    // Primero obtener el perfume actual para conservar imagen si no se sube nueva
+    const queryActual = 'SELECT imagen_url FROM perfumes WHERE id = $1 AND activo = true';
+    const resultActual = await pool.query(queryActual, [id]);
+    
+    if (resultActual.rows.length === 0) {
+        return null;
+    }
+    
+    const imagenUrl = perfume.imagen_url !== undefined ? perfume.imagen_url : resultActual.rows[0].imagen_url;
+    
     const query = `
         UPDATE perfumes
         SET 
@@ -59,15 +69,15 @@ const actualizarPerfume = async (id, perfume) => {
         perfume.nombre,
         perfume.marca,
         perfume.familia_olfativa,
-        perfume.notas_salida,
-        perfume.notas_medias,
-        perfume.notas_fondo,
-        perfume.temporada,
-        perfume.duracion_horas,
+        perfume.notas_salida || null,
+        perfume.notas_medias || null,
+        perfume.notas_fondo || null,
+        perfume.temporada || null,
+        perfume.duracion_horas || null,
         perfume.precio,
         perfume.stock,
-        perfume.imagen_url,
-        perfume.descripcion,
+        imagenUrl,
+        perfume.descripcion || null,
         id
     ];
 

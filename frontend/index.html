@@ -6,37 +6,41 @@
     <title>ScentVault | Boutique de Perfumes</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,600;6..96,700&family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@500;600;700;800&family=Playfair+Display:wght@600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <main id="login-view" class="login-shell">
-        <section class="login-brand" aria-label="Presentacion ScentVault">
-            <div class="brand-mark">SV</div>
-            <p class="eyebrow">Boutique privada</p>
-            <h1>ScentVault</h1>
-            <p class="brand-copy">Gestion premium para colecciones de perfumes, clientes exclusivos y ventas de alto valor.</p>
-            <div class="brand-notes">
-                <span>Inventario curado</span>
-                <span>Clientes selectos</span>
-                <span>Ventas trazables</span>
+        <section class="login-brand" aria-label="Presentación ScentVault">
+            <div class="login-brand-copy">
+                <h1>Sistema de Gestión de Perfumería de Lujo</h1>
+                <p>Administra perfumes, clientes, inventario y ventas desde una plataforma segura y elegante.</p>
+            </div>
+            <div class="login-photo-wrap hero-image">
+                <img class="login-hero-image" src="assets/img/perfume.png" alt="Perfume de lujo ScentVault">
             </div>
         </section>
 
-        <section class="login-card" aria-label="Inicio de sesion">
-            <p class="eyebrow">Acceso seguro</p>
-            <h2>Iniciar sesion</h2>
-            <p class="muted">Ingresa con tus credenciales de ScentVault.</p>
+        <section class="login-card" aria-label="Inicio de sesión">
+            <div class="login-card-top">
+                <img src="assets/img/logo.png" alt="ScentVault">
+            </div>
+            <h2>Iniciar sesión</h2>
+            <p class="muted">Accede a la plataforma de gestión exclusiva de ScentVault.</p>
             <form id="login-form" class="form-stack">
                 <label>
-                    Correo electronico
-                    <input type="email" name="correo" autocomplete="email" placeholder="admin@scentvault.com" required>
+                    Correo electrónico
+                    <span class="input-shell"><input type="email" name="correo" autocomplete="email" placeholder="admin@scentvault.com" required></span>
                 </label>
                 <label>
-                    Contrasena
-                    <input type="password" name="password" autocomplete="current-password" placeholder="********" required>
+                    Contraseña
+                    <span class="input-shell"><input type="password" name="password" autocomplete="current-password" placeholder="********" required></span>
                 </label>
-                <button class="primary-button" type="submit">Entrar al vault</button>
+                <div class="login-options">
+                    <label class="remember-option"><input type="checkbox" checked> Recordarme</label>
+                    <a href="#" aria-label="Recuperar contraseña">¿Olvidaste tu contraseña?</a>
+                </div>
+                <button class="primary-button" type="submit">Acceder al sistema</button>
                 <p id="login-message" class="form-message" role="status"></p>
             </form>
         </section>
@@ -45,26 +49,38 @@
     <main id="app-view" class="app-shell is-hidden">
         <aside class="sidebar">
             <div class="sidebar-brand">
-                <div class="brand-mark">SV</div>
+                <img src="assets/img/logo.png" alt="ScentVault">
+            </div>
+            <button id="sidebar-toggle" class="collapse-button" type="button" aria-label="Colapsar menú">Menú</button>
+            <nav class="nav-menu" aria-label="Navegación principal">
+                <button class="nav-link is-active" type="button" data-view="dashboard"><span>□</span><b>Dashboard</b></button>
+                <button class="nav-link" type="button" data-view="perfumes"><span>▱</span><b>Perfumes</b></button>
+                <button class="nav-link" type="button" data-view="clientes"><span>○</span><b>Clientes</b></button>
+                <button class="nav-link" type="button" data-view="ventas"><span>▰</span><b>Ventas</b></button>
+                <button class="nav-link" type="button" data-view="inventario"><span>◇</span><b>Inventario</b></button>
+                <button class="nav-link admin-only" type="button" data-view="reportes"><span>▥</span><b>Reportes</b></button>
+                <button class="nav-link admin-only" type="button" data-view="configuracion"><span>◎</span><b>Configuración</b></button>
+                <button class="nav-link admin-only" type="button" data-view="usuarios"><span>👥</span><b>Usuarios</b></button>
+            </nav>
+            <div class="sidebar-profile">
+                <div class="profile-avatar" id="profile-avatar-initial">A</div>
                 <div>
-                    <strong>ScentVault</strong>
-                    <span>Boutique OS</span>
+                    <strong id="profile-nombre">Usuario</strong>
+                    <span id="profile-email">usuario@scentvault.com</span>
                 </div>
             </div>
-            <nav class="nav-menu" aria-label="Navegacion principal">
-                <button class="nav-link is-active" type="button" data-view="dashboard">Dashboard</button>
-                <button class="nav-link" type="button" data-view="perfumes">Perfumes</button>
-                <button class="nav-link" type="button" data-view="clientes">Clientes</button>
-                <button class="nav-link" type="button" data-view="ventas">Ventas</button>
-            </nav>
-            <button id="logout-button" class="ghost-button" type="button">Cerrar sesion</button>
+            <button id="logout-button" class="ghost-button" type="button">Cerrar sesión</button>
         </aside>
 
         <section class="workspace">
             <header class="topbar">
                 <div>
-                    <p class="eyebrow">Panel administrativo</p>
-                    <h2 id="view-title">Dashboard</h2>
+                    <h2 id="view-title">¡Bienvenido!</h2>
+                    <p class="dashboard-subtitle" id="view-subtitle">Aquí tienes un resumen general de tu perfumería.</p>
+                </div>
+                <div class="topbar-actions">
+                    <button class="bell-button" type="button" aria-label="Notificaciones">⌁</button>
+                    <button class="date-chip" type="button" id="date-chip">24 de mayo de 2025</button>
                 </div>
                 <div class="user-chip">
                     <span id="user-name">Usuario</span>
@@ -73,43 +89,43 @@
             </header>
 
             <section id="dashboard-section" class="view-section">
-                <div class="hero-panel">
-                    <div>
-                        <p class="eyebrow">Resumen ejecutivo</p>
-                        <h3>Operacion boutique en tiempo real</h3>
-                        <p class="muted">Consulta inventario, clientes y ventas desde una experiencia sobria, premium y responsive.</p>
-                    </div>
-                    <button id="refresh-dashboard" class="secondary-button" type="button">Actualizar</button>
+                <div class="stats-grid dashboard-kpis">
+                    <article class="stat-card"><span>Ventas del día</span><strong id="stat-ingresos">$0.00</strong><small>↑ 18.5% vs ayer</small></article>
+                    <article class="stat-card"><span>Ventas del mes</span><strong id="stat-mes">$0.00</strong><small>Acumulado mensual</small></article>
+                    <article class="stat-card"><span>Clientes</span><strong id="stat-clientes">0</strong><small>Registrados</small></article>
+                    <article class="stat-card"><span>Perfumes</span><strong id="stat-perfumes">0</strong><small>En inventario</small></article>
+                    <article class="stat-card"><span>Productos agotados</span><strong id="stat-agotados">0</strong><small>Requieren reorden</small></article>
+                    <article class="stat-card"><span>Valor inventario</span><strong id="stat-inventario">$0.00</strong><small>Disponible</small></article>
                 </div>
-                <div class="stats-grid">
-                    <article class="stat-card">
-                        <span>Perfumes activos</span>
-                        <strong id="stat-perfumes">0</strong>
-                    </article>
-                    <article class="stat-card">
-                        <span>Clientes</span>
-                        <strong id="stat-clientes">0</strong>
-                    </article>
-                    <article class="stat-card">
-                        <span>Ventas</span>
-                        <strong id="stat-ventas">0</strong>
-                    </article>
-                    <article class="stat-card accent">
-                        <span>Ingresos</span>
-                        <strong id="stat-ingresos">$0.00</strong>
-                    </article>
-                </div>
-                <div class="content-grid">
-                    <article class="panel">
-                        <div class="panel-header">
-                            <h3>Ultimas ventas</h3>
+                <div class="dashboard-grid-main">
+                    <article class="panel chart-panel sales-chart-card">
+                        <div class="panel-header"><h3>Ventas últimos 7 días</h3><button id="refresh-dashboard" class="secondary-button" type="button">Actualizar</button></div>
+                        <div class="luxury-line-chart" aria-label="Gráfica de ventas últimos 7 días">
+                            <svg viewBox="0 0 720 260" role="img">
+                                <defs><linearGradient id="goldFade" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#C9A227" stop-opacity="0.26"/><stop offset="1" stop-color="#C9A227" stop-opacity="0"/></linearGradient></defs>
+                                <path class="area" d="M40 190 L145 155 L250 128 L355 118 L460 76 L565 124 L680 102 L680 230 L40 230 Z"/>
+                                <path class="line" d="M40 190 L145 155 L250 128 L355 118 L460 76 L565 124 L680 102"/>
+                                <g class="points"><circle cx="40" cy="190"/><circle cx="145" cy="155"/><circle cx="250" cy="128"/><circle cx="355" cy="118"/><circle cx="460" cy="76"/><circle cx="565" cy="124"/><circle cx="680" cy="102"/></g>
+                            </svg>
+                            <div class="chart-labels"><span>18 May</span><span>19 May</span><span>20 May</span><span>21 May</span><span>22 May</span><span>23 May</span><span>24 May</span></div>
                         </div>
-                        <div id="recent-sales" class="timeline"></div>
                     </article>
-                    <article class="panel">
-                        <div class="panel-header">
-                            <h3>Stock bajo</h3>
+                    <article class="panel best-sellers-card">
+                        <div class="panel-header"><h3>Perfumes más vendidos</h3></div>
+                        <div class="product-list" id="top-perfumes">
+                            <div><img src="assets/img/perfume.png" alt="Bleu de Chanel"><p><strong>Bleu de Chanel Parfum</strong><span>Chanel</span></p><b>28</b></div>
+                            <div><img src="assets/img/perfume.png" alt="Sauvage Elixir"><p><strong>Sauvage Elixir</strong><span>Dior</span></p><b>24</b></div>
+                            <div><img src="assets/img/perfume.png" alt="Aventus Creed"><p><strong>Aventus Creed</strong><span>Creed</span></p><b>21</b></div>
+                            <div><img src="assets/img/perfume.png" alt="Tom Ford Noir"><p><strong>Tom Ford Noir Extreme</strong><span>Tom Ford</span></p><b>18</b></div>
                         </div>
+                    </article>
+                    <article class="panel latest-sales-card">
+                        <div class="panel-header"><h3>Últimas ventas</h3></div>
+                        <div class="sales-table-preview"><table><thead><tr><th>ID Venta</th><th>Cliente</th><th>Productos</th><th>Total</th><th>Fecha</th></tr></thead><tbody><tr><td>#VTA-000123</td><td>María González</td><td>2 productos</td><td>$2,850.00</td><td>24/05/2025</td></tr><tr><td>#VTA-000122</td><td>José Ramírez</td><td>3 productos</td><td>$4,190.00</td><td>24/05/2025</td></tr><tr><td>#VTA-000121</td><td>Ana López</td><td>1 producto</td><td>$1,450.00</td><td>24/05/2025</td></tr></tbody></table></div>
+                        <div id="recent-sales" class="timeline dashboard-hidden-feed"></div>
+                    </article>
+                    <article class="panel stock-card">
+                        <div class="panel-header"><h3>Stock bajo</h3></div>
                         <div id="low-stock" class="compact-list"></div>
                     </article>
                 </div>
@@ -120,7 +136,7 @@
                     <article class="panel form-panel">
                         <div class="panel-header">
                             <div>
-                                <p class="eyebrow">Catalogo</p>
+                                <p class="eyebrow">Catálogo</p>
                                 <h3 id="perfume-form-title">Nuevo perfume</h3>
                             </div>
                         </div>
@@ -133,7 +149,8 @@
                             <label>Duracion horas<input name="duracion_horas" type="number" min="0" step="0.1"></label>
                             <label>Precio<input name="precio" type="number" min="1" step="0.01" required></label>
                             <label>Stock<input name="stock" type="number" min="0" step="1" required></label>
-                            <label>Imagen URL<input name="imagen_url" type="url"></label>
+                            <label>Imagen <input id="perfume-imagen" name="imagen" type="file" accept="image/jpeg,image/jpg,image/png,image/webp"></label>
+                            <div id="imagen-preview" class="imagen-preview"></div>
                             <label class="full">Notas salida<textarea name="notas_salida" rows="2"></textarea></label>
                             <label class="full">Notas medias<textarea name="notas_medias" rows="2"></textarea></label>
                             <label class="full">Notas fondo<textarea name="notas_fondo" rows="2"></textarea></label>
@@ -166,7 +183,7 @@
                         <form id="cliente-form" class="grid-form">
                             <input type="hidden" name="id">
                             <label>Nombre<input name="nombre" required></label>
-                            <label>Telefono<input name="telefono" required></label>
+                            <label>Teléfono<input name="telefono" required></label>
                             <label>Correo<input name="correo" type="email" required></label>
                             <label>Preferencia olfativa<input name="preferencia_olfativa" required></label>
                             <div class="form-actions full">
@@ -180,12 +197,13 @@
                             <h3>Clientes</h3>
                             <button id="reload-clientes" class="secondary-button" type="button">Recargar</button>
                         </div>
+                        <label class="search-box">Buscar cliente<input id="cliente-search" type="search" placeholder="Nombre, correo o preferencia"></label>
                         <div class="table-scroll">
                             <table>
                                 <thead>
                                     <tr>
                                         <th>Nombre</th>
-                                        <th>Telefono</th>
+                                        <th>Teléfono</th>
                                         <th>Correo</th>
                                         <th>Preferencia</th>
                                         <th></th>
@@ -209,7 +227,7 @@
                         </div>
                         <form id="venta-form" class="grid-form">
                             <label>Cliente<select name="cliente_id" id="venta-cliente"></select></label>
-                            <label>Metodo de pago
+                            <label>Método de pago
                                 <select name="metodo_pago" required>
                                     <option value="">Seleccionar</option>
                                     <option value="efectivo">Efectivo</option>
@@ -244,6 +262,155 @@
                                     </tr>
                                 </thead>
                                 <tbody id="ventas-table"></tbody>
+                            </table>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section id="inventario-section" class="view-section is-hidden">
+                <div class="section-header">
+                    <h2>Inventario</h2>
+                    <p class="section-subtitle">Gestiona el stock de perfumes</p>
+                </div>
+                <article class="panel table-panel">
+                    <div class="panel-header">
+                        <div>
+                            <h3>Estado del inventario</h3>
+                        </div>
+                        <div class="panel-controls">
+                            <label class="search-box">Buscar<input id="inventario-search" type="search" placeholder="Nombre o marca"></label>
+                            <select id="inventario-filter" class="filter-select">
+                                <option value="">Todos los estados</option>
+                                <option value="disponible">Disponible</option>
+                                <option value="bajo">Stock bajo</option>
+                                <option value="agotado">Agotado</option>
+                            </select>
+                            <button id="reload-inventario" class="secondary-button" type="button">Recargar</button>
+                        </div>
+                    </div>
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Perfume</th>
+                                    <th>Marca</th>
+                                    <th>Stock actual</th>
+                                    <th>Stock mínimo</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventario-table"></tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+
+            <section id="reportes-section" class="view-section is-hidden admin-only">
+                <div class="section-header">
+                    <h2>Reportes</h2>
+                    <p class="section-subtitle">Análisis y estadísticas del negocio</p>
+                </div>
+                <div class="reports-grid">
+                    <article class="panel chart-panel">
+                        <div class="panel-header"><h3>Ventas por mes</h3></div>
+                        <div id="monthly-chart" class="chart-placeholder"></div>
+                    </article>
+                    <article class="panel chart-panel">
+                        <div class="panel-header"><h3>Perfumes más vendidos</h3></div>
+                        <div id="top-perfumes-chart" class="chart-placeholder"></div>
+                    </article>
+                    <article class="panel">
+                        <div class="panel-header">
+                            <h3>Resumen de reportes</h3>
+                            <div class="panel-controls">
+                                <button id="export-pdf" class="secondary-button" type="button">📄 PDF</button>
+                                <button id="export-excel" class="secondary-button" type="button">📊 Excel</button>
+                            </div>
+                        </div>
+                        <div id="reports-summary" class="stats-grid"></div>
+                    </article>
+                </div>
+            </section>
+
+            <section id="configuracion-section" class="view-section is-hidden admin-only">
+                <div class="section-header">
+                    <h2>Configuración</h2>
+                    <p class="section-subtitle">Administra tu perfil y preferencias</p>
+                </div>
+                <div class="settings-grid">
+                    <article class="panel">
+                        <div class="panel-header"><h3>Perfil</h3></div>
+                        <form id="profile-form" class="grid-form">
+                            <label>Nombre<input id="setting-nombre" type="text" required></label>
+                            <label>Correo<input id="setting-correo" type="email" required></label>
+                            <div class="form-actions full">
+                                <button class="primary-button" type="submit">Guardar cambios</button>
+                            </div>
+                        </form>
+                    </article>
+                    <article class="panel">
+                        <div class="panel-header"><h3>Seguridad</h3></div>
+                        <form id="security-form" class="grid-form">
+                            <label>Contraseña actual<input id="current-password" type="password" required></label>
+                            <label>Nueva contraseña<input id="new-password" type="password" required></label>
+                            <label>Confirmar contraseña<input id="confirm-password" type="password" required></label>
+                            <div class="form-actions full">
+                                <button class="primary-button" type="submit">Actualizar contraseña</button>
+                            </div>
+                        </form>
+                    </article>
+                </div>
+            </section>
+
+            <section id="usuarios-section" class="view-section is-hidden admin-only">
+                <div class="section-header">
+                    <h2>Usuarios</h2>
+                    <p class="section-subtitle">Gestiona los usuarios del sistema</p>
+                </div>
+                <div class="section-layout">
+                    <article class="panel form-panel">
+                        <div class="panel-header">
+                            <div>
+                                <p class="eyebrow">Sistema</p>
+                                <h3 id="usuario-form-title">Nuevo usuario</h3>
+                            </div>
+                        </div>
+                        <form id="usuario-form" class="grid-form">
+                            <input type="hidden" name="id">
+                            <label>Nombre<input name="nombre" required></label>
+                            <label>Correo<input name="correo" type="email" required></label>
+                            <label>Rol
+                                <select name="rol" required>
+                                    <option value="">Seleccionar rol</option>
+                                    <option value="admin">Administrador</option>
+                                    <option value="vendedor">Vendedor</option>
+                                </select>
+                            </label>
+                            <label>Contraseña<input name="password" type="password" id="usuario-password" required></label>
+                            <div class="form-actions full">
+                                <button class="primary-button" type="submit">Guardar usuario</button>
+                                <button id="cancel-usuario-edit" class="ghost-button" type="button">Limpiar</button>
+                            </div>
+                        </form>
+                    </article>
+                    <article class="panel table-panel">
+                        <div class="panel-header">
+                            <h3>Usuarios del sistema</h3>
+                            <button id="reload-usuarios" class="secondary-button" type="button">Recargar</button>
+                        </div>
+                        <div class="table-scroll">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Correo</th>
+                                        <th>Rol</th>
+                                        <th>Estado</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usuarios-table"></tbody>
                             </table>
                         </div>
                     </article>

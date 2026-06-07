@@ -18,7 +18,14 @@ const obtenerPerfumes = async (req, res) => {
 
 const crearPerfume = async (req, res) => {
     try {
-        const nuevoPerfume = await perfumeModel.crearPerfume(req.body);
+        const perfumeData = req.body;
+        
+        // Si se subió una imagen, agregar URL de Cloudinary
+        if (req.file) {
+            perfumeData.imagen_url = req.file.secure_url;
+        }
+        
+        const nuevoPerfume = await perfumeModel.crearPerfume(perfumeData);
 
         res.status(201).json({
             ok: true,
@@ -26,9 +33,10 @@ const crearPerfume = async (req, res) => {
             data: nuevoPerfume
         });
     } catch (error) {
+        console.error('Error al crear perfume:', error);
         res.status(500).json({
             ok: false,
-            error: 'Error al registrar perfume'
+            error: error.message || 'Error al registrar perfume'
         });
     }
 };
@@ -36,7 +44,15 @@ const crearPerfume = async (req, res) => {
 const actualizarPerfume = async (req, res) => {
     try {
         const { id } = req.params;
-        const perfumeActualizado = await perfumeModel.actualizarPerfume(id, req.body);
+        const perfumeData = req.body;
+        
+        // Si se subió una nueva imagen, agregar URL de Cloudinary
+        if (req.file) {
+            perfumeData.imagen_url = req.file.secure_url;
+        }
+        // Si no se subió imagen, no modificar imagen_url (conservar la anterior)
+        
+        const perfumeActualizado = await perfumeModel.actualizarPerfume(id, perfumeData);
 
         if (!perfumeActualizado) {
             return res.status(404).json({
@@ -51,9 +67,10 @@ const actualizarPerfume = async (req, res) => {
             data: perfumeActualizado
         });
     } catch (error) {
+        console.error('Error al actualizar perfume:', error);
         res.status(500).json({
             ok: false,
-            error: 'Error al actualizar perfume'
+            error: error.message || 'Error al actualizar perfume'
         });
     }
 };
