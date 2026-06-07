@@ -1,11 +1,14 @@
 const API_BASE = 'http://localhost:3000/api';
 
 const state = {
-    token: localStorage.getItem('scentvault_token'),
-    usuario: JSON.parse(localStorage.getItem('scentvault_usuario') || 'null'),
+    token: localStorage.getItem('scentvault_token') || localStorage.getItem('token'),
+    usuario: JSON.parse(localStorage.getItem('scentvault_usuario') || localStorage.getItem('usuario') || 'null'),
+    rol: JSON.parse(localStorage.getItem('scentvault_usuario') || localStorage.getItem('usuario') || 'null')?.rol || localStorage.getItem('rol') || null,
     perfumes: [],
     clientes: [],
+    clientesAll: [],
     ventas: [],
+    reportCharts: {},
     saleItems: []
 };
 
@@ -68,6 +71,10 @@ function bindEvents() {
     $('#clear-report-range')?.addEventListener('click', clearReportRange);
     $('#report-fecha-inicio')?.addEventListener('change', updateReportRangeLabel);
     $('#report-fecha-fin')?.addEventListener('change', updateReportRangeLabel);
+    $('.clientes-insight-card [data-view]')?.addEventListener('click', (e) => switchView(e.currentTarget.dataset.view));
+    $$('#dashboard-section [data-view]').forEach((button) => {
+        button.addEventListener('click', () => switchView(button.dataset.view));
+    });
     $('#modal-close').addEventListener('click', closeModal);
     $('#confirm-no').addEventListener('click', closeConfirm);
     $('#modal-overlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeModal(); });
@@ -123,8 +130,12 @@ async function handleLogin(event) {
         if (!response.ok || !data.ok) throw new Error(readApiError(data));
         state.token = data.token;
         state.usuario = data.usuario;
+        state.rol = data.usuario?.rol || null;
         localStorage.setItem('scentvault_token', data.token);
         localStorage.setItem('scentvault_usuario', JSON.stringify(data.usuario));
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('usuario', JSON.stringify(data.usuario));
+        localStorage.setItem('rol', data.usuario?.rol || '');
         showApp();
         await loadAll();
         toast('Sesion iniciada correctamente', 'success');
@@ -136,25 +147,37 @@ function showApp() {
     $('#app-view').classList.remove('is-hidden');
     const nombre = state.usuario?.nombre || 'Usuario';
     const correo = state.usuario?.correo || '';
-    const rol = state.usuario?.rol || 'vendedor';
+    const rol = state.usuario?.rol || state.rol || 'vendedor';
+    state.rol = rol;
+    localStorage.setItem('rol', rol);
     $('#user-name').textContent = nombre;
     $('#user-role').textContent = rol;
     $('#profile-nombre').textContent = nombre;
     $('#profile-email').textContent = correo;
     $('#profile-avatar-initial').textContent = nombre.charAt(0).toUpperCase();
-    applyRoleBasedAccess(rol);
+    applyRolePermissions();
 }
 
-function applyRoleBasedAccess(rol) {
+function applyRolePermissions() {
+    const rol = state.usuario?.rol || state.rol || localStorage.getItem('rol') || 'vendedor';
     const isAdmin = rol === 'admin';
+    const currentView = $$('.view-section').find(s => !s.classList.contains('is-hidden'))?.id?.replace('-section', '');
     $$('.admin-only').forEach(el => { el.style.display = isAdmin ? '' : 'none'; });
+    document.body.dataset.role = rol;
+    if (!isAdmin && currentView && ['inventario', 'reportes', 'configuracion', 'usuarios'].includes(currentView)) {
+        switchView('dashboard');
+    }
 }
 
 function logout() {
     localStorage.removeItem('scentvault_token');
     localStorage.removeItem('scentvault_usuario');
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('rol');
     state.token = null;
     state.usuario = null;
+    state.rol = null;
     state.saleItems = [];
     $('#app-view').classList.add('is-hidden');
     $('#login-view').classList.remove('is-hidden');
@@ -162,9 +185,12 @@ function logout() {
 }
 
 function switchView(view) {
-    const isAdmin = state.usuario?.rol === 'admin';
-    const adminOnlyViews = ['reportes', 'configuracion', 'usuarios'];
-    if (!isAdmin && adminOnlyViews.includes(view)) { toast('No tienes permisos', 'error'); return; }
+    const isAdmin = (state.usuario?.rol || state.rol) === 'admin';
+    const adminOnlyViews = ['inventario', 'reportes', 'configuracion', 'usuarios'];
+    if (!isAdmin && adminOnlyViews.includes(view)) {
+        toast('No tienes permisos', 'error');
+        view = 'dashboard';
+    }
 
     $$('.nav-link').forEach(b => b.classList.toggle('is-active', b.dataset.view === view));
     $$('.view-section').forEach(s => s.classList.add('is-hidden'));
@@ -183,7 +209,7 @@ function switchView(view) {
         configuracion: 'Administra tu perfil y preferencias', usuarios: 'Gestiona usuarios del sistema'
     };
 
-    if (view === 'dashboard') $('#view-title').textContent = `\u00a1Bienvenida, ${state.usuario?.nombre || 'Usuario'}!`;
+    if (view === 'dashboard') $('#view-title').textContent = `¡Bienvenida, ${isAdmin ? 'Administrador' : (state.usuario?.nombre || 'Usuario')}! 👋`;
     else $('#view-title').textContent = titles[view] || view;
 
     $('#view-subtitle').textContent = subs[view] || '';
@@ -193,6 +219,7 @@ function switchView(view) {
     if (view === 'inventario') loadInventario();
     if (view === 'reportes') loadReportes();
     if (view === 'configuracion') loadConfig();
+    applyRolePermissions();
 }
 
 async function loadAll() {
@@ -232,6 +259,7 @@ async function loadDashboard() {
         renderRecentActivity(r.ultimos_clientes || [], r.ultimos_perfumes || []);
         renderRecentSales(r.ultimas_ventas || state.ventas);
         renderLowStock();
+        renderDashboardVisuals();
     } catch {
         const p = state.perfumes.filter(x => x.activo !== false);
         renderStats({
@@ -243,10 +271,12 @@ async function loadDashboard() {
         });
         renderRecentSales(state.ventas);
         renderLowStock();
+        renderDashboardVisuals();
     }
 }
 
 function renderStats(stats) {
+    applyDashboardRoleLabels();
     $('#stat-ingresos').textContent = currency.format(Number(stats.ventas_dia || 0));
     const mes = $('#stat-mes');
     if (mes) mes.textContent = currency.format(Number(stats.ventas_mes || 0));
@@ -256,6 +286,20 @@ function renderStats(stats) {
     if (agot) agot.textContent = stats.agotados || 0;
     const inv = $('#stat-inventario');
     if (inv) inv.textContent = currency.format(Number(stats.inventario || 0));
+}
+
+function applyDashboardRoleLabels() {
+    const isAdmin = (state.rol || state.usuario?.rol) === 'admin';
+    const clientesCard = $('#stat-clientes')?.closest('.stat-card');
+    const perfumesCard = $('#stat-perfumes')?.closest('.stat-card');
+    if (clientesCard) {
+        clientesCard.querySelector('span').textContent = isAdmin ? 'Clientes activos' : 'Clientes atendidos';
+        clientesCard.querySelector('small').textContent = isAdmin ? 'Registrados' : 'Este mes';
+    }
+    if (perfumesCard) {
+        perfumesCard.querySelector('span').textContent = isAdmin ? 'Perfumes activos' : 'Perfumes disponibles';
+        perfumesCard.querySelector('small').textContent = isAdmin ? 'En inventario' : 'Con stock disponible';
+    }
 }
 
 function renderRecentActivity(clientes, perfumes) {
@@ -276,7 +320,7 @@ function renderRecentSales(ventas) {
     const container = $('#recent-sales');
     if (!ventas || !ventas.length) { container.innerHTML = emptyState('Aun no hay ventas.'); return; }
     container.innerHTML = ventas.slice(0, 5).map(v => {
-        const nom = v.cliente && typeof v.cliente === 'object' ? v.cliente.nombre : (v.cliente_nombre || 'Mostrador');
+        const nom = v.cliente && typeof v.cliente === 'object' ? v.cliente.nombre : (v.cliente || v.cliente_nombre || 'Mostrador');
         const cant = (v.productos || []).length;
         return `<div class="timeline-item"><strong>${escapeHtml(nom)}</strong><p>${cant} producto${cant !== 1 ? 's' : ''} - ${currency.format(Number(v.total || 0))} - ${escapeHtml(v.metodo_pago || '')} - ${formatDate(v.fecha_venta)}</p></div>`;
     }).join('');
@@ -285,11 +329,138 @@ function renderRecentSales(ventas) {
 function renderLowStock() {
     const container = $('#low-stock');
     const items = state.perfumes.filter(p => Number(p.stock) <= 5 && Number(p.stock) > 0 && p.activo !== false).slice(0, 6);
-    if (!items.length) { container.innerHTML = emptyState('Inventario saludable.'); return; }
-    container.innerHTML = items.map(p => {
-        const badge = p.stock === 0 ? '\u{1F534}' : (p.stock <= 3 ? '\u{1F7E1}' : '\u{1F7E2}');
-        return `<div class="list-item"><strong>${badge} ${escapeHtml(p.nombre)}</strong><p>${escapeHtml(p.marca)} - Stock ${p.stock}</p></div>`;
+    if (!container) return;
+    const agotados = state.perfumes.filter(p => p.activo !== false && Number(p.stock) === 0).length;
+    const bajo = state.perfumes.filter(p => p.activo !== false && Number(p.stock) > 0 && Number(p.stock) <= 5).length;
+    container.innerHTML = `
+        <div class="dashboard-alert is-danger"><span>△</span><div><strong>${agotados} producto${agotados !== 1 ? 's' : ''} agotado${agotados !== 1 ? 's' : ''}</strong><p>Requieren reorden urgente</p></div><b>→</b></div>
+        <div class="dashboard-alert is-warning"><span>!</span><div><strong>${bajo} producto${bajo !== 1 ? 's' : ''} con bajo stock</strong><p>${items.length ? items.map(p => escapeHtml(p.nombre)).slice(0, 2).join(', ') : 'Sin alertas de bajo stock'}</p></div><b>→</b></div>
+        <div class="dashboard-alert is-success"><span>✓</span><div><strong>${agotados || bajo ? 'Inventario por revisar' : 'Todo en orden'}</strong><p>${agotados || bajo ? 'Atiende alertas pendientes' : 'Inventario saludable'}</p></div><b>→</b></div>
+    `;
+}
+
+function renderDashboardVisuals() {
+    renderDashboardSalesChart();
+    renderDashboardCategoryChart();
+    renderDashboardTopProducts();
+    renderDashboardActivityColumns();
+    renderDashboardBottomMetrics();
+}
+
+function renderDashboardSalesChart() {
+    const box = $('#dashboard-sales-chart');
+    if (!box) return;
+    const days = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (6 - i));
+        const key = d.toISOString().slice(0, 10);
+        const label = d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short' });
+        const total = state.ventas
+            .filter(v => new Date(v.fecha_venta).toISOString().slice(0, 10) === key)
+            .reduce((t, v) => t + Number(v.total || 0), 0);
+        return { label, total };
+    });
+    const max = Math.max(...days.map(d => d.total), 1);
+    const width = 720;
+    const height = 260;
+    const points = days.map((d, i) => {
+        const x = 42 + i * ((width - 84) / 6);
+        const y = 210 - (d.total / max) * 155;
+        return { ...d, x, y };
+    });
+    const path = points.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+    const area = `${path} L${points[points.length - 1].x.toFixed(1)} 228 L${points[0].x.toFixed(1)} 228 Z`;
+    const grid = [0, 0.25, 0.5, 0.75, 1].map(r => {
+        const y = 210 - r * 155;
+        return `<line x1="42" y1="${y}" x2="680" y2="${y}"/><text x="8" y="${y + 4}">${currency.format(max * r).replace('.00', '')}</text>`;
     }).join('');
+    box.innerHTML = `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Ventas últimos 7 días">
+        <defs><linearGradient id="dashboardWineFade" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#8B0F2F" stop-opacity="0.20"/><stop offset="1" stop-color="#8B0F2F" stop-opacity="0"/></linearGradient></defs>
+        <g class="chart-grid">${grid}</g>
+        <path class="chart-area" d="${area}"/><path class="chart-line" d="${path}"/>
+        <g>${points.map(p => `<circle cx="${p.x}" cy="${p.y}" r="5"><title>${p.label}: ${currency.format(p.total)}</title></circle>`).join('')}</g>
+        <g class="chart-labels-svg">${points.map(p => `<text x="${p.x}" y="248" text-anchor="middle">${p.label}</text>`).join('')}</g>
+    </svg>`;
+}
+
+function renderDashboardCategoryChart() {
+    const box = $('#dashboard-category-chart');
+    if (!box) return;
+    const totals = {};
+    state.ventas.forEach(v => {
+        (v.productos || []).forEach(item => {
+            const perfumeId = typeof item.perfume === 'object' ? (item.perfume?._id || item.perfume?.id) : item.perfume;
+            const perfume = state.perfumes.find(p => String(p._id || p.id) === String(perfumeId));
+            const familia = perfume?.familia_olfativa || 'Sin categoría';
+            totals[familia] = (totals[familia] || 0) + Number(item.cantidad || 1);
+        });
+    });
+    const rows = Object.entries(totals).sort((a, b) => b[1] - a[1]).slice(0, 4);
+    const data = rows.length ? rows : [['Sin ventas', 1]];
+    const total = data.reduce((t, r) => t + r[1], 0);
+    const colors = ['#8B0F2F', '#C9A227', '#D9789A', '#D9B985'];
+    let start = 0;
+    const gradient = data.map((row, i) => {
+        const pct = row[1] / total * 100;
+        const end = start + pct;
+        const part = `${colors[i]} ${start}% ${end}%`;
+        start = end;
+        return part;
+    }).join(', ');
+    box.innerHTML = `<div class="dashboard-donut" style="background: conic-gradient(${gradient});"><span></span></div>
+        <div class="dashboard-category-legend">${data.map((row, i) => `<div><span style="background:${colors[i]}"></span><b>${escapeHtml(row[0])}</b><em>${Math.round(row[1] / total * 100)}%</em></div>`).join('')}</div>`;
+}
+
+function renderDashboardTopProducts() {
+    const box = $('#dashboard-top-products');
+    if (!box) return;
+    const sales = {};
+    state.ventas.forEach(v => {
+        (v.productos || []).forEach(item => {
+            const name = item.nombre || item.perfume?.nombre || 'Perfume';
+            if (!sales[name]) sales[name] = { nombre: name, vendidos: 0, imagen_url: item.imagen_url || '', marca: '' };
+            sales[name].vendidos += Number(item.cantidad || 1);
+        });
+    });
+    Object.values(sales).forEach(row => {
+        const p = state.perfumes.find(perfume => perfume.nombre === row.nombre);
+        if (p) { row.imagen_url = row.imagen_url || p.imagen_url; row.marca = p.marca || ''; }
+    });
+    const items = Object.values(sales).sort((a, b) => b.vendidos - a.vendidos).slice(0, 5);
+    const fallback = state.perfumes.filter(p => p.activo !== false).slice(0, 5).map(p => ({ nombre: p.nombre, marca: p.marca, imagen_url: p.imagen_url, vendidos: 0 }));
+    const rows = items.length ? items : fallback;
+    if (!rows.length) { box.innerHTML = emptyState('Aún no hay perfumes para mostrar.'); return; }
+    box.innerHTML = rows.map(p => `<article class="dashboard-top-product"><img src="${p.imagen_url || 'assets/img/perfume.png'}" alt="${escapeHtml(p.nombre)}"><div><strong>${escapeHtml(p.nombre)}</strong><small>${escapeHtml(p.marca || '')}</small></div><b>${p.vendidos}<span> vendidos</span></b></article>`).join('') + '<button class="primary-button dashboard-catalog-button" type="button" data-view="perfumes">Ver catálogo completo →</button>';
+    $('#dashboard-top-products [data-view]')?.addEventListener('click', (e) => switchView(e.currentTarget.dataset.view));
+}
+
+function renderDashboardActivityColumns() {
+    const clients = $('#dashboard-activity-clients');
+    const perfumes = $('#dashboard-activity-perfumes');
+    if (clients) {
+        const rows = state.clientes.slice(0, 3);
+        clients.innerHTML = rows.length ? rows.map(c => `<div class="dash-activity-row"><span>♙</span><div><strong>${escapeHtml(c.nombre)}</strong><small>${formatDate(c.createdAt)}</small></div></div>`).join('') : emptyState('Sin clientes recientes.');
+    }
+    if (perfumes) {
+        const rows = state.perfumes.filter(p => p.activo !== false).slice(0, 3);
+        perfumes.innerHTML = rows.length ? rows.map(p => `<div class="dash-activity-row"><span>♢</span><div><strong>${escapeHtml(p.nombre)}</strong><small>${escapeHtml(p.marca || '')}</small></div></div>`).join('') : emptyState('Sin perfumes recientes.');
+    }
+}
+
+function renderDashboardBottomMetrics() {
+    const box = $('#dashboard-bottom-metrics');
+    if (!box) return;
+    const total = state.ventas.reduce((t, v) => t + Number(v.total || 0), 0);
+    const ventas = state.ventas.length;
+    const productos = state.ventas.reduce((t, v) => t + (v.productos || []).reduce((s, p) => s + Number(p.cantidad || 1), 0), 0);
+    const ticket = ventas ? total / ventas : 0;
+    const margen = total ? Math.round(((total - total / 1.16) / total) * 100) : 0;
+    box.innerHTML = `
+        <article><span>▥</span><div><small>Ticket promedio</small><strong>${currency.format(ticket)}</strong></div></article>
+        <article><span>▦</span><div><small>Ventas realizadas</small><strong>${ventas}</strong></div></article>
+        <article><span>▣</span><div><small>Productos vendidos</small><strong>${productos}</strong></div></article>
+        <article><span>◔</span><div><small>Margen bruto</small><strong>${margen}%</strong></div></article>
+    `;
 }
 
 // ============== PERFUMES ==============
@@ -332,6 +503,7 @@ function renderPerfumes() {
         return;
     }
 
+    const isAdmin = (state.rol || state.usuario?.rol) === 'admin';
     container.innerHTML = items.map(p => {
         const activo = p.activo !== false;
         const stock = Number(p.stock);
@@ -350,10 +522,10 @@ function renderPerfumes() {
                 <div class="perfume-card-meta"><span>Stock: ${stock}</span><strong>${currency.format(Number(p.precio))}</strong></div>
                 <div class="premium-card-actions">
                     <button class="mini-button" data-ver-perfume="${id}" title="Ver">👁</button>
-                    <button class="mini-button" data-edit-perfume="${id}" title="Editar">✎</button>
-                    ${activo
+                    ${isAdmin ? `<button class="mini-button" data-edit-perfume="${id}" title="Editar">✎</button>` : ''}
+                    ${isAdmin && activo
                         ? `<button class="mini-button danger" data-baja-perfume="${id}" title="Dar de baja">⋮</button>`
-                        : `<button class="mini-button success" data-reactivar-perfume="${id}" title="Reactivar">↻</button>`}
+                        : isAdmin ? `<button class="mini-button success" data-reactivar-perfume="${id}" title="Reactivar">↻</button>` : ''}
                 </div>
             </div>
         </div>`;
@@ -425,6 +597,7 @@ function showPerfumeDetail(id) {
 
 async function savePerfume(event) {
     event.preventDefault();
+    if ((state.rol || state.usuario?.rol) !== 'admin') { toast('No tienes permisos para guardar perfumes', 'error'); return; }
     const form = event.currentTarget;
     const id = form.querySelector('input[name="id"]').value;
     const fileInput = form.querySelector('input[name="imagen"]');
@@ -489,10 +662,21 @@ async function reactivarPerfume(id) {
 
 async function loadClientes() {
     try {
-        const filter = $('#clientes-filter')?.value || 'activos';
-        const endpoint = filter === 'inactivos' ? '/clientes/inactivos' : '/clientes';
-        const data = await apiRequest(endpoint);
-        state.clientes = data.data || [];
+        const isAdmin = state.usuario?.rol === 'admin';
+        const filterEl = $('#clientes-filter');
+        let filter = filterEl?.value || 'activos';
+        if (!isAdmin && filter === 'inactivos') {
+            filter = 'activos';
+            if (filterEl) filterEl.value = 'activos';
+        }
+        const [activos, inactivos] = await Promise.all([
+            apiRequest('/clientes'),
+            isAdmin ? apiRequest('/clientes/inactivos') : Promise.resolve({ data: [] })
+        ]);
+        const activosData = activos.data || [];
+        const inactivosData = inactivos.data || [];
+        state.clientesAll = [...activosData, ...inactivosData];
+        state.clientes = filter === 'inactivos' ? inactivosData : activosData;
         renderClientes();
         hydrateSaleSelects();
     } catch (error) { toast(error.message, 'error'); }
@@ -500,28 +684,39 @@ async function loadClientes() {
 
 function renderClientes() {
     const tbody = $('#clientes-table');
+    if (!tbody) return;
     const search = ($('#cliente-search')?.value || '').trim().toLowerCase();
     let items = state.clientes;
     if (search) items = items.filter(c => [c.nombre, c.telefono, c.correo, c.preferencia_olfativa].join(' ').toLowerCase().includes(search));
+    renderClientesKPIs(items);
+
+    const countLabel = $('#clientes-count-label');
+    if (countLabel) countLabel.textContent = `Mostrando ${items.length ? 1 : 0} a ${Math.min(items.length, 5)} de ${items.length} clientes`;
 
     if (!items.length) {
-        tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><p>${search ? 'Ningun cliente coincide.' : 'No hay clientes registrados.'}</p></div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><p>${search ? 'Ningun cliente coincide.' : 'No hay clientes registrados.'}</p></div></td></tr>`;
         return;
     }
 
-    tbody.innerHTML = items.map(c => {
+    tbody.innerHTML = items.slice(0, 5).map(c => {
         const id = c._id || c.id;
+        const stats = getClienteVentaStats(id);
+        const activo = c.activo !== false;
+        const pref = c.preferencia_olfativa || 'Sin preferencia';
+        const canManageStatus = state.usuario?.rol === 'admin';
         return `<tr>
-            <td>${escapeHtml(c.nombre)}</td>
+            <td><div class="cliente-cell"><span class="cliente-avatar" style="--avatar-color:${getAvatarColor(c.nombre)}">${getInitials(c.nombre)}</span><div><strong>${escapeHtml(c.nombre)}</strong><small class="cliente-status ${activo ? 'is-active' : 'is-inactive'}">${activo ? 'Activo' : 'Inactivo'}</small></div></div></td>
             <td>${escapeHtml(c.telefono || '')}</td>
             <td>${escapeHtml(c.correo || '')}</td>
-            <td>${escapeHtml(c.preferencia_olfativa || '')}</td>
-            <td><div class="action-buttons">
-                <button class="mini-button" data-edit-cliente="${id}">Editar</button>
-                <button class="mini-button" data-historial-cliente="${id}">Historial</button>
-                ${c.activo !== false
-                    ? `<button class="mini-button danger" data-baja-cliente="${id}">Baja</button>`
-                    : `<button class="mini-button success" data-reactivar-cliente="${id}">Reactivar</button>`}
+            <td><span class="cliente-pref-pill">${escapeHtml(pref)}</span></td>
+            <td><strong>${stats.compras}</strong></td>
+            <td>${currency.format(stats.total)}</td>
+            <td><div class="clientes-actions">
+                <button class="mini-button" data-edit-cliente="${id}" title="Editar">✎</button>
+                <button class="mini-button" data-historial-cliente="${id}" title="Historial">◎</button>
+                ${canManageStatus && c.activo !== false
+                    ? `<button class="mini-button danger" data-baja-cliente="${id}" title="Dar de baja">⌫</button>`
+                    : canManageStatus ? `<button class="mini-button success" data-reactivar-cliente="${id}" title="Reactivar">↻</button>` : ''}
             </div></td>
         </tr>`;
     }).join('');
@@ -530,6 +725,45 @@ function renderClientes() {
     $$('[data-historial-cliente]').forEach(b => b.addEventListener('click', () => showHistorial(b.dataset.historialCliente)));
     $$('[data-baja-cliente]').forEach(b => b.addEventListener('click', () => confirmBaja('cliente', b.dataset.bajaCliente)));
     $$('[data-reactivar-cliente]').forEach(b => b.addEventListener('click', () => reactivarCliente(b.dataset.reactivarCliente)));
+}
+
+function renderClientesKPIs(items) {
+    const container = $('#clientes-kpis');
+    if (!container) return;
+    const all = state.clientesAll.length ? state.clientesAll : state.clientes;
+    const activos = all.filter(c => c.activo !== false).length;
+    const ventasConCliente = state.ventas.filter(v => v.cliente_id);
+    const statsByClient = all.map(c => getClienteVentaStats(c._id || c.id));
+    const frecuentes = statsByClient.filter(s => s.compras >= 2).length;
+    const totalVentasClientes = ventasConCliente.reduce((t, v) => t + Number(v.total || 0), 0);
+    const ticket = ventasConCliente.length ? totalVentasClientes / ventasConCliente.length : 0;
+    container.innerHTML = `
+        <article><span class="cliente-kpi-icon is-pink">♙</span><div><small>Clientes totales</small><strong>${all.length}</strong><em>Registrados en el sistema</em></div></article>
+        <article><span class="cliente-kpi-icon is-green">♧</span><div><small>Clientes activos</small><strong>${activos}</strong><em>Activos actualmente</em></div></article>
+        <article><span class="cliente-kpi-icon is-gold">☆</span><div><small>Clientes frecuentes</small><strong>${frecuentes}</strong><em>Con compras recurrentes</em></div></article>
+        <article><span class="cliente-kpi-icon is-purple">▢</span><div><small>Ticket promedio</small><strong>${currency.format(ticket)}</strong><em>Por venta con cliente</em></div></article>
+    `;
+    const insight = $('#clientes-insight-text');
+    if (insight) {
+        const pct = ventasConCliente.length && state.ventas.length ? Math.round((ventasConCliente.length / state.ventas.length) * 100) : 0;
+        insight.textContent = `${frecuentes} clientes realizan compras recurrentes y las ventas asociadas a clientes representan el ${pct}% de tus ventas registradas.`;
+    }
+}
+
+function getClienteVentaStats(id) {
+    const ventas = state.ventas.filter(v => String(v.cliente_id || '') === String(id));
+    return { compras: ventas.length, total: ventas.reduce((t, v) => t + Number(v.total || 0), 0) };
+}
+
+function getInitials(name = '') {
+    const parts = String(name).trim().split(/\s+/).filter(Boolean);
+    return (parts[0]?.[0] || 'C').toUpperCase() + (parts[1]?.[0] || '').toUpperCase();
+}
+
+function getAvatarColor(name = '') {
+    const colors = ['#B20F45', '#8E63C7', '#2E8F3C', '#6EA55A', '#C47D16', '#4767B8'];
+    const index = String(name).split('').reduce((t, ch) => t + ch.charCodeAt(0), 0) % colors.length;
+    return colors[index];
 }
 
 async function saveCliente(event) {
@@ -596,6 +830,7 @@ async function loadVentas() {
         const data = await apiRequest('/ventas');
         state.ventas = data.data || [];
         renderVentas();
+        renderClientes();
     } catch (error) { toast(error.message, 'error'); }
 }
 
@@ -814,8 +1049,9 @@ async function showTicket(id) {
 function hydrateSaleSelects() {
     const select = $('#venta-cliente');
     if (select) {
+        const clientes = state.clientesAll.length ? state.clientesAll : state.clientes;
         select.innerHTML = '<option value="">Cliente mostrador</option>' +
-            state.clientes.filter(c => c.activo !== false).map(c => `<option value="${c._id || c.id}">${escapeHtml(c.nombre)}</option>`).join('');
+            clientes.filter(c => c.activo !== false).map(c => `<option value="${c._id || c.id}">${escapeHtml(c.nombre)}</option>`).join('');
     }
 }
 
@@ -955,13 +1191,18 @@ function renderInventarioAlertas(items) {
 
 async function loadReportes() {
     try {
+        if ((state.usuario?.rol || state.rol) !== 'admin') {
+            switchView('dashboard');
+            toast('Reportes solo está disponible para administradores', 'error');
+            return;
+        }
         setDefaultReportRange();
         const data = await apiRequest(`/reportes${getReportRangeQuery()}`);
         const r = data.data;
         renderReportesKPIs(r);
         renderReportesCharts(r);
         renderReportesAlertas(r);
-    } catch { toast('Error al cargar reportes', 'error'); }
+    } catch (error) { console.error('Error al cargar reportes:', error); toast(error.message || 'Error al cargar reportes', 'error'); }
 }
 
 let _reportRangeInitialized = false;
@@ -1017,58 +1258,62 @@ function renderReportesKPIs(r) {
 }
 
 function renderReportesCharts(r) {
-    if (typeof Chart === 'undefined') return;
+    if (typeof Chart !== 'undefined') {
+        const ventasCanvas = $('#ventasChartCanvas');
+        if (ventasCanvas) {
+            state.reportCharts.ventas?.destroy();
+            const ctx = ventasCanvas.getContext('2d');
+            state.reportCharts.ventas = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: (r.ventas_por_dia || []).map(v => v._id?.slice(5)),
+                    datasets: [{
+                        label: 'Ventas ($)',
+                        data: (r.ventas_por_dia || []).map(v => v.total),
+                        borderColor: '#8B1538',
+                        backgroundColor: 'rgba(139,21,56,0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#C9A227'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { callback: v => currency.format(v) } } }
+                }
+            });
+            setTimeout(() => state.reportCharts.ventas?.resize(), 0);
+        }
 
-    const ventasCanvas = $('#ventasChartCanvas');
-    if (ventasCanvas && r.ventas_por_dia?.length) {
-        const ctx = ventasCanvas.getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: r.ventas_por_dia.map(v => v._id?.slice(5)),
-                datasets: [{
-                    label: 'Ventas ($)',
-                    data: r.ventas_por_dia.map(v => v.total),
-                    borderColor: '#8B1538',
-                    backgroundColor: 'rgba(139,21,56,0.1)',
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#C9A227'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, ticks: { callback: v => currency.format(v) } } }
-            }
-        });
-    }
-
-    const topCanvas = $('#topChartCanvas');
-    if (topCanvas && r.mas_vendidos?.length) {
-        const ctx = topCanvas.getContext('2d');
-        const top = r.mas_vendidos.slice(0, 8);
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: top.map(v => v._id),
-                datasets: [{
-                    label: 'Unidades vendidas',
-                    data: top.map(v => v.cantidad),
-                    backgroundColor: 'rgba(139,21,56,0.7)',
-                    borderRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: 'y',
-                plugins: { legend: { display: false } },
-                scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
-            }
-        });
+        const topCanvas = $('#topChartCanvas');
+        if (topCanvas) {
+            state.reportCharts.top?.destroy();
+            const ctx = topCanvas.getContext('2d');
+            const top = (r.mas_vendidos || []).slice(0, 8);
+            state.reportCharts.top = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: top.map(v => v._id),
+                    datasets: [{
+                        label: 'Unidades vendidas',
+                        data: top.map(v => v.cantidad),
+                        backgroundColor: 'rgba(139,21,56,0.7)',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                }
+            });
+            setTimeout(() => state.reportCharts.top?.resize(), 0);
+        }
     }
 
     const clientesContainer = $('#clientes-frecuentes-table');
@@ -1346,7 +1591,7 @@ function emptyState(text) {
 }
 
 function exportPDF() {
-    ensureDefaultReportRange();
+    setDefaultReportRange();
     toast('Generando PDF...', 'info');
     const link = document.createElement('a');
     const url = `${API_BASE}/export/pdf${getReportRangeQuery()}`;
@@ -1359,7 +1604,7 @@ function exportPDF() {
 }
 
 function exportExcel() {
-    ensureDefaultReportRange();
+    setDefaultReportRange();
     toast('Generando Excel...', 'info');
     const link = document.createElement('a');
     const url = `${API_BASE}/export/excel${getReportRangeQuery()}`;

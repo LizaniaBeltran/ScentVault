@@ -17,7 +17,8 @@ const transformarVenta = (venta) => ({
 
 const obtenerVentas = async (req, res) => {
     try {
-        const ventas = await Venta.find()
+        const filtro = req.usuario?.rol === 'vendedor' ? { vendedor: req.usuario.id } : {};
+        const ventas = await Venta.find(filtro)
             .populate('cliente', 'nombre')
             .populate('vendedor', 'nombre')
             .sort({ fecha_venta: -1 });
@@ -40,7 +41,8 @@ const obtenerVentas = async (req, res) => {
 const obtenerVentaPorId = async (req, res) => {
     try {
         const { id } = req.params;
-        const venta = await Venta.findById(id)
+        const filtro = req.usuario?.rol === 'vendedor' ? { _id: id, vendedor: req.usuario.id } : { _id: id };
+        const venta = await Venta.findOne(filtro)
             .populate('cliente', 'nombre telefono correo')
             .populate('vendedor', 'nombre correo')
             .populate('productos.perfume', 'nombre marca imagen_url');

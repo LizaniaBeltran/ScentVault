@@ -5,6 +5,6 @@ const { obtenerPerfil, actualizarPerfil, cambiarPassword } = require('../control
 
 router.get('/perfil', verificarToken, permitirRoles('admin'), obtenerPerfil);
 router.put('/perfil', verificarToken, permitirRoles('admin'), actualizarPerfil);
-router.put('/password', verificarToken, cambiarPassword);
+router.put('/password', verificarToken, permitirRoles('admin'), cambiarPassword);
 
 module.exports = router;

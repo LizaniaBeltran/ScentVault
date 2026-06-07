@@ -56,8 +56,8 @@ function drawFooter(doc, page, totalPages, generatedAt = new Date()) {
     const previousY = doc.y;
     doc.moveTo(MARGIN, PAGE_H - 38).lineTo(PAGE_W - MARGIN, PAGE_H - 38).strokeColor(LINE).lineWidth(0.4).stroke();
     doc.fontSize(6.5).font('Helvetica').fillColor(GRAY);
-    doc.text(`Generado autom\u00e1ticamente por ScentVault | ${generatedAt.toLocaleString('es-MX')}`, MARGIN, PAGE_H - 29, { width: 330 });
-    doc.fillColor(WINE).text(`P\u00e1gina ${page} de ${totalPages}`, PAGE_W - MARGIN - 100, PAGE_H - 29, { width: 100, align: 'right' });
+    doc.text(`Generado por ScentVault | ${generatedAt.toLocaleString('es-MX')}`, MARGIN, PAGE_H - 31, { width: 330, height: 8, lineBreak: false });
+    doc.fillColor(WINE).text(`P\u00e1gina ${page} de ${totalPages}`, PAGE_W - MARGIN - 100, PAGE_H - 31, { width: 100, height: 8, align: 'right', lineBreak: false });
     doc.lineWidth(1);
     doc.y = previousY;
 }
@@ -211,7 +211,7 @@ function drawInventoryThumbnails(doc, y, perfumes, maxRows = 10) {
     return y + 22 + rows.length * rowH + 18;
 }
 
-const exportPDF = async (req, res) => {
+const exportPDFLegacy = async (req, res) => {
     try {
         const generatedAt = new Date();
         const { inicio, fin } = getDateRange(req.query);
@@ -440,6 +440,271 @@ const exportPDF = async (req, res) => {
             doc.switchToPage(i);
             drawHeader(doc, logo, i + 1, generatedAt);
             drawFooter(doc, i + 1, range.count, generatedAt);
+        }
+
+        doc.end();
+    } catch (e) {
+        console.error('Error PDF:', e);
+        res.status(500).json({ ok: false, error: 'Error al generar PDF' });
+    }
+};
+
+const exportPDF = async (req, res) => {
+    try {
+        const generatedAt = new Date();
+        const { inicio, fin } = getDateRange(req.query);
+        const rangoVentas = { fecha_venta: { $gte: inicio, $lte: fin } };
+
+        const [perfumesRaw, clientes, ventas, ventasPorDia, masVendidosRaw, metodoPago, topClientes] = await Promise.all([
+            Perfume.find({ activo: true }).sort({ nombre: 1 }),
+            Cliente.find({ activo: true }).sort({ nombre: 1 }),
+            Venta.find(rangoVentas).sort({ fecha_venta: -1 }).limit(80).populate('cliente', 'nombre'),
+            Venta.aggregate([
+                { $match: rangoVentas },
+                { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$fecha_venta' } }, total: { $sum: '$total' }, cantidad: { $sum: 1 } } },
+                { $sort: { _id: 1 } },
+                { $limit: 12 }
+            ]),
+            Venta.aggregate([
+                { $match: rangoVentas },
+                { $unwind: '$productos' },
+                { $group: { _id: '$productos.nombre', cantidad: { $sum: '$productos.cantidad' }, total: { $sum: '$productos.subtotal' } } },
+                { $sort: { cantidad: -1 } },
+                { $limit: 8 }
+            ]),
+            Venta.aggregate([
+                { $match: rangoVentas },
+                { $group: { _id: '$metodo_pago', total: { $sum: '$total' }, cantidad: { $sum: 1 } } },
+                { $sort: { total: -1 } }
+            ]),
+            Venta.aggregate([
+                { $match: { ...rangoVentas, cliente: { $ne: null } } },
+                { $group: { _id: '$cliente', compras: { $sum: 1 }, total: { $sum: '$total' } } },
+                { $sort: { total: -1 } },
+                { $limit: 8 },
+                { $lookup: { from: 'clientes', localField: '_id', foreignField: '_id', as: 'cliente' } },
+                { $unwind: { path: '$cliente', preserveNullAndEmptyArrays: true } },
+                { $project: { nombre: '$cliente.nombre', compras: 1, total: 1 } }
+            ])
+        ]);
+
+        const perfumes = perfumesRaw
+            .filter(p => !isTestProductName(p.nombre))
+            .sort((a, b) => (Number(b.precio || 0) * Number(b.stock || 0)) - (Number(a.precio || 0) * Number(a.stock || 0)));
+        const masVendidos = masVendidosRaw.filter(p => !isTestProductName(p._id)).slice(0, 8);
+        const valorInv = perfumes.reduce((t, p) => t + Number(p.precio || 0) * Number(p.stock || 0), 0);
+        const totalVentas = ventas.reduce((t, v) => t + Number(v.total || 0), 0);
+        const agotados = perfumes.filter(p => Number(p.stock) === 0).length;
+        const bajoStock = perfumes.filter(p => Number(p.stock) > 0 && Number(p.stock) <= 5).length;
+        const disponibles = perfumes.filter(p => Number(p.stock) > 5).length;
+        const logoPath = path.join(__dirname, '..', '..', 'assets', 'img', 'logo.png');
+        const logo = fs.existsSync(logoPath) ? logoPath : null;
+
+        const doc = new PDFDocument({ margin: MARGIN, size: 'A4', bufferPages: true, autoFirstPage: true });
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=ScentVault_Reporte.pdf');
+        doc.pipe(res);
+
+        const bottomY = PAGE_H - 58;
+        const contentTop = 72;
+        let y = contentTop;
+
+        const addContentPage = () => {
+            doc.addPage();
+            y = contentTop;
+        };
+
+        const ensureSpace = (height) => {
+            if (y + height > bottomY) addContentPage();
+        };
+
+        const title = (text, height = 30) => {
+            ensureSpace(height);
+            addSectionTitle(doc, text, y);
+            y += height;
+        };
+
+        const card = (x, yy, w, h) => {
+            doc.roundedRect(x, yy, w, h, 12).fillColor('#FFFFFF').fill();
+            doc.roundedRect(x, yy, w, h, 12).strokeColor(LINE).lineWidth(0.5).stroke();
+        };
+
+        const drawCompactTable = (headers, rows, widths, options = {}) => {
+            const rowH = options.rowH || 18;
+            const headerH = 20;
+            const x = options.x || MARGIN;
+            const maxRows = options.maxRows || rows.length;
+            const tableRows = rows.slice(0, maxRows);
+            const totalW = widths.reduce((t, w) => t + w, 0);
+            let headerDrawn = false;
+
+            const drawHeaderRow = () => {
+                ensureSpace(headerH + rowH);
+                doc.rect(x, y, totalW, headerH).fillColor(WINE).fill();
+                headers.forEach((hdr, i) => {
+                    const cx = x + widths.slice(0, i).reduce((t, w) => t + w, 0);
+                    doc.fillColor('#FFF').fontSize(6.5).font('Helvetica-Bold').text(hdr, cx + 4, y + 6, { width: widths[i] - 8, height: 9 });
+                });
+                y += headerH;
+                headerDrawn = true;
+            };
+
+            drawHeaderRow();
+            tableRows.forEach((row, ri) => {
+                if (y + rowH > bottomY) {
+                    addContentPage();
+                    drawHeaderRow();
+                } else if (!headerDrawn) drawHeaderRow();
+                doc.rect(x, y, totalW, rowH).fillColor(ri % 2 === 0 ? '#FFFFFF' : CREAM).fill();
+                row.forEach((cell, ci) => {
+                    const cx = x + widths.slice(0, ci).reduce((t, w) => t + w, 0);
+                    const value = String(cell ?? '-');
+                    const maxChars = Math.max(8, Math.floor((widths[ci] - 8) / 3.5));
+                    const clipped = value.length > maxChars ? `${value.slice(0, maxChars - 1)}…` : value;
+                    doc.fillColor(DARK).fontSize(6.2).font('Helvetica').text(clipped, cx + 4, y + 5, { width: widths[ci] - 8, height: 8 });
+                });
+                doc.moveTo(x, y + rowH).lineTo(x + totalW, y + rowH).strokeColor(LINE).lineWidth(0.25).stroke();
+                y += rowH;
+            });
+            y += 12;
+        };
+
+        const drawInventoryTable = (rows) => {
+            const rowH = 18;
+            const widths = [150, 92, 45, 62, 82];
+            const headers = ['Perfume', 'Marca', 'Stock', 'Precio', 'Valor'];
+            const totalW = widths.reduce((t, w) => t + w, 0);
+            const drawHeaderRow = () => {
+                ensureSpace(20 + rowH);
+                doc.rect(MARGIN, y, totalW, 20).fillColor(WINE).fill();
+                headers.forEach((h, i) => {
+                    const cx = MARGIN + widths.slice(0, i).reduce((t, w) => t + w, 0);
+                    doc.fillColor('#FFF').fontSize(6.5).font('Helvetica-Bold').text(h, cx + 4, y + 6, { width: widths[i] - 8 });
+                });
+                y += 20;
+            };
+            drawHeaderRow();
+            rows.forEach((p, ri) => {
+                if (y + rowH > bottomY) { addContentPage(); drawHeaderRow(); }
+                doc.rect(MARGIN, y, totalW, rowH).fillColor(ri % 2 === 0 ? '#FFFFFF' : CREAM).fill();
+                const values = [p.nombre, p.marca, p.stock, money(p.precio), money(Number(p.precio || 0) * Number(p.stock || 0))];
+                let cx = MARGIN;
+                values.forEach((v, i) => {
+                    const w = widths[i];
+                    const text = String(v || '-');
+                    doc.fillColor(DARK).fontSize(6.2).font(i >= 2 ? 'Helvetica-Bold' : 'Helvetica').text(text.length > 28 ? `${text.slice(0, 27)}…` : text, cx + 4, y + 5, { width: w - 8, height: 8 });
+                    cx += w;
+                });
+                doc.moveTo(MARGIN, y + rowH).lineTo(MARGIN + totalW, y + rowH).strokeColor(LINE).lineWidth(0.25).stroke();
+                y += rowH;
+            });
+            y += 12;
+        };
+
+        // Página 1 compacta: portada + resumen + KPIs.
+        doc.rect(0, 0, PAGE_W, PAGE_H).fillColor('#FFFFFF').fill();
+        doc.circle(36, 90, 145).fillColor(SOFT_WINE).fill();
+        doc.circle(PAGE_W - 35, PAGE_H - 95, 175).fillColor(CREAM).fill();
+        if (logo) doc.image(logo, PAGE_W - MARGIN - 118, 58, { width: 112 });
+        doc.rect(MARGIN, 72, 5, 120).fillColor(GOLD).fill();
+        doc.fillColor(WINE).fontSize(9).font('Helvetica-Bold').text('REPORTE EJECUTIVO', MARGIN + 18, 80, { characterSpacing: 1.5 });
+        doc.fillColor(DARK).fontSize(34).font('Helvetica-Bold').text('Reporte General', MARGIN + 18, 106, { width: 330 });
+        doc.fillColor(WINE).fontSize(20).font('Helvetica-Bold').text('ScentVault', MARGIN + 18, 148);
+        doc.fillColor(GRAY).fontSize(9.5).font('Helvetica').text(`Periodo: ${inicio.toLocaleDateString('es-MX')} - ${fin.toLocaleDateString('es-MX')}`, MARGIN + 18, 178);
+        doc.fillColor(GRAY).fontSize(8.5).font('Helvetica').text(`Generado: ${generatedAt.toLocaleString('es-MX')}`, MARGIN + 18, 194);
+
+        card(MARGIN, 245, CONTENT_W, 94);
+        doc.fillColor(WINE).fontSize(11).font('Helvetica-Bold').text('Resumen ejecutivo', MARGIN + 18, 263);
+        doc.fillColor(DARK).fontSize(8.5).font('Helvetica').text(
+            `Durante el periodo analizado se registraron ${ventas.length} ventas por ${money(totalVentas)}. El inventario activo suma ${perfumes.length} perfumes con valor estimado de ${money(valorInv)}. Hay ${agotados} productos agotados y ${bajoStock} productos con stock bajo.`,
+            MARGIN + 18, 283, { width: CONTENT_W - 36, lineGap: 2 }
+        );
+
+        const kpiW = (CONTENT_W - 20) / 3;
+        const kpis = [
+            ['Perfumes activos', perfumes.length, WINE], ['Clientes', clientes.length, GOLD], ['Ventas', ventas.length, WINE],
+            ['Valor inventario', money(valorInv), GOLD], ['Total ventas', money(totalVentas), WINE], ['Agotados', agotados, '#cb2431']
+        ];
+        kpis.forEach((k, i) => {
+            const col = i % 3;
+            const row = Math.floor(i / 3);
+            drawKPIBox(doc, MARGIN + col * (kpiW + 10), 372 + row * 70, kpiW, 54, k[0], k[1], k[2]);
+        });
+
+        // Página 2 en adelante: secciones con salto automático.
+        addContentPage();
+
+        title('Gráficas operativas');
+        const chartW = 248;
+        const chartH = 112;
+        const chartY = y + 15;
+        drawBarChart(doc, MARGIN, chartY, chartW, chartH, ventasPorDia, '_id', 'total', WINE);
+        drawHorizontalBarChart(doc, MARGIN + chartW + 12, chartY, chartW, chartH, masVendidos.slice(0, 5), '_id', 'cantidad', GOLD);
+        y = chartY + chartH + 28;
+
+        ensureSpace(160);
+        const invY = y + 15;
+        addSectionTitle(doc, 'Inventario por estado', y);
+        const pieTotal = disponibles + bajoStock + agotados || 1;
+        const vals = [['Disponible', disponibles, '#22863a'], ['Bajo stock', bajoStock, GOLD], ['Agotado', agotados, '#cb2431']];
+        vals.forEach((row, i) => {
+            const by = invY + i * 24;
+            const pct = Math.round((row[1] / pieTotal) * 100);
+            doc.fillColor(row[2]).roundedRect(MARGIN + 100, by, Math.max(2, (row[1] / pieTotal) * 285), 12, 6).fill();
+            doc.fillColor(DARK).fontSize(7).font('Helvetica').text(`${row[0]} (${row[1]})`, MARGIN, by + 1, { width: 92 });
+            doc.fillColor(GRAY).text(`${pct}%`, MARGIN + 392, by + 1, { width: 45, align: 'right' });
+        });
+        y = invY + 88;
+
+        const lowStockRows = perfumes.filter(p => Number(p.stock) > 0 && Number(p.stock) <= 5).slice(0, 4).map(p => [p.nombre, p.marca, p.stock, money(Number(p.precio || 0) * Number(p.stock || 0))]);
+        if (lowStockRows.length) {
+            title('Alertas de stock bajo', 28);
+            drawCompactTable(['Perfume', 'Marca', 'Stock', 'Valor'], lowStockRows, [170, 105, 55, 90], { maxRows: 4 });
+        }
+
+        title('Ventas por método de pago', 28);
+        drawHorizontalBarChart(doc, MARGIN, y + 15, CONTENT_W, 90, metodoPago, '_id', 'total', WINE);
+        y += 120;
+
+        title('Clientes frecuentes', 28);
+        drawCompactTable(['Cliente', 'Compras', 'Total gastado'], topClientes.map(c => [c.nombre || 'Cliente', c.compras, money(c.total)]), [230, 80, 130], { maxRows: 5 });
+
+        title('Inventario de perfumes', 28);
+        drawInventoryTable(perfumes.slice(0, 10));
+
+        title('Últimas ventas', 28);
+        drawCompactTable(
+            ['ID', 'Cliente', 'Productos', 'Total', 'Método', 'Fecha'],
+            ventas.slice(0, 10).map(v => {
+                const nom = v.cliente && typeof v.cliente === 'object' ? v.cliente.nombre : (v.cliente_nombre || 'Mostrador');
+                return [String(v._id).slice(-8), nom, `${(v.productos || []).length} prod.`, money(v.total), v.metodo_pago || '-', v.fecha_venta ? new Date(v.fecha_venta).toLocaleDateString('es-MX') : '-'];
+            }),
+            [62, 115, 58, 70, 70, 75],
+            { maxRows: 10 }
+        );
+
+        title('Conclusiones automáticas', 28);
+        ensureSpace(95);
+        const topProducto = masVendidos[0]?._id || 'sin producto destacado';
+        const topMetodo = metodoPago[0]?._id || 'sin método dominante';
+        card(MARGIN, y, CONTENT_W, 88);
+        const conclusionLines = [
+            `Producto con mayor rotación: ${topProducto}.`,
+            `Método de pago más relevante: ${topMetodo}.`,
+            bajoStock > 0 ? `${bajoStock} productos requieren reabastecimiento preventivo.` : 'Inventario sin alertas críticas de stock bajo.'
+        ];
+        conclusionLines.forEach((line, i) => {
+            doc.circle(MARGIN + 18, y + 18 + i * 22, 3.5).fillColor(i % 2 ? GOLD : WINE).fill();
+            doc.fillColor(DARK).fontSize(8).font('Helvetica').text(line, MARGIN + 32, y + 14 + i * 22, { width: CONTENT_W - 48 });
+        });
+        y += 102;
+
+        const range = doc.bufferedPageRange();
+        for (let i = range.start; i < range.start + range.count; i++) {
+            doc.switchToPage(i);
+            const pageNumber = i + 1;
+            if (pageNumber > 1) drawHeader(doc, logo, pageNumber, generatedAt);
+            drawFooter(doc, pageNumber, range.count, generatedAt);
         }
 
         doc.end();

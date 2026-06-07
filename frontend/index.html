@@ -53,23 +53,25 @@
             </div>
             <button id="sidebar-toggle" class="collapse-button" type="button" aria-label="Colapsar menú">Menú</button>
             <nav class="nav-menu" aria-label="Navegación principal">
-                <button class="nav-link is-active" type="button" data-view="dashboard"><span>⊞</span><b>Dashboard</b></button>
-                <button class="nav-link" type="button" data-view="perfumes"><span>♢</span><b>Perfumes</b></button>
-                <button class="nav-link" type="button" data-view="clientes"><span>●</span><b>Clientes</b></button>
-                <button class="nav-link" type="button" data-view="ventas"><span>✦</span><b>Ventas</b></button>
-                <button class="nav-link" type="button" data-view="inventario"><span>◈</span><b>Inventario</b></button>
-                <button class="nav-link admin-only" type="button" data-view="reportes"><span>▦</span><b>Reportes</b></button>
-                <button class="nav-link admin-only" type="button" data-view="configuracion"><span>⚙</span><b>Configuración</b></button>
-                <button class="nav-link admin-only" type="button" data-view="usuarios"><span>⊕</span><b>Usuarios</b></button>
+                <button class="nav-link is-active" type="button" data-view="dashboard"><span><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg></span><b>Dashboard</b></button>
+                <button class="nav-link" type="button" data-view="perfumes"><span><svg viewBox="0 0 24 24"><path d="M10 2h4v4h-4z"/><path d="M9 6h6l1 3v9a4 4 0 0 1-4 4 4 4 0 0 1-4-4V9z"/><path d="M9 13h6"/></svg></span><b>Perfumes</b></button>
+                <button class="nav-link" type="button" data-view="clientes"><span><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><b>Clientes</b></button>
+                <button class="nav-link" type="button" data-view="ventas"><span><svg viewBox="0 0 24 24"><path d="M4 5h2l2 11h10l2-8H8"/><circle cx="10" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/></svg></span><b>Ventas</b></button>
+                <button class="nav-link admin-only" type="button" data-view="inventario"><span><svg viewBox="0 0 24 24"><path d="M3 7.5 12 3l9 4.5-9 4.5z"/><path d="M3 7.5V17l9 4 9-4V7.5"/><path d="M12 12v9"/></svg></span><b>Inventario</b></button>
+                <button class="nav-link admin-only" type="button" data-view="reportes"><span><svg viewBox="0 0 24 24"><path d="M7 3h10l3 3v15H4V3z"/><path d="M17 3v4h4"/><path d="M8 17v-5M12 17V9M16 17v-3"/></svg></span><b>Reportes</b></button>
+                <button class="nav-link admin-only" type="button" data-view="usuarios"><span><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="10" r="2.5"/><path d="M15 18a5 5 0 0 1 6 2"/></svg></span><b>Usuarios</b></button>
+                <button class="nav-link admin-only" type="button" data-view="configuracion"><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2 3.4-.2-.1a1.7 1.7 0 0 0-2 .4l-.3.2-3.3-2-3.3 2-.3-.2a1.7 1.7 0 0 0-2-.4l-.2.1-2-3.4.1-.1A1.7 1.7 0 0 0 4.6 15L4.5 14V10l.1-1a1.7 1.7 0 0 0-.3-1.9L4.2 7l2-3.4.2.1a1.7 1.7 0 0 0 2-.4l.3-.2 3.3 2 3.3-2 .3.2a1.7 1.7 0 0 0 2 .4l.2-.1 2 3.4-.1.1a1.7 1.7 0 0 0-.3 1.9l.1 1v4z"/></svg></span><b>Configuración</b></button>
             </nav>
             <div class="sidebar-profile">
                 <div class="profile-avatar" id="profile-avatar-initial">A</div>
                 <div>
                     <strong id="profile-nombre">Usuario</strong>
                     <span id="profile-email">usuario@scentvault.com</span>
+                    <small>● En línea</small>
                 </div>
             </div>
             <button id="logout-button" class="ghost-button" type="button">Cerrar sesión</button>
+            <img class="sidebar-watermark" src="assets/img/perfume.png" alt="" aria-hidden="true">
         </aside>
 
         <section class="workspace">
@@ -79,7 +81,6 @@
                     <p class="dashboard-subtitle" id="view-subtitle">Aquí tienes un resumen general de tu perfumería.</p>
                 </div>
                 <div class="topbar-actions">
-                    <button class="bell-button" type="button" aria-label="Notificaciones">⌁</button>
                     <button class="date-chip" type="button" id="date-chip">24 de mayo de 2025</button>
                 </div>
                 <div class="user-chip">
@@ -89,70 +90,42 @@
             </header>
 
             <section id="dashboard-section" class="view-section">
-                <div class="stats-grid dashboard-kpis">
-                    <article class="stat-card">
-                        <div class="stat-icon stat-icon-gold">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-                        </div>
-                        <span>Ventas del día</span><strong id="stat-ingresos">$0</strong>
-                    </article>
-                    <article class="stat-card">
-                        <div class="stat-icon stat-icon-wine">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-                        </div>
-                        <span>Ventas del mes</span><strong id="stat-mes">$0</strong>
-                    </article>
-                    <article class="stat-card">
-                        <div class="stat-icon stat-icon-gold">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        </div>
-                        <span>Clientes activos</span><strong id="stat-clientes">0</strong>
-                    </article>
-                    <article class="stat-card">
-                        <div class="stat-icon stat-icon-wine">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                        </div>
-                        <span>Perfumes activos</span><strong id="stat-perfumes">0</strong>
-                    </article>
-                    <article class="stat-card">
-                        <div class="stat-icon" style="color:#cb2431">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                        </div>
-                        <span>Agotados</span><strong id="stat-agotados">0</strong>
-                    </article>
-                    <article class="stat-card">
-                        <div class="stat-icon stat-icon-gold">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
-                        </div>
-                        <span>Valor inventario</span><strong id="stat-inventario">$0</strong>
-                    </article>
+                <div class="stats-grid dashboard-kpis dashboard-kpis-luxe">
+                    <article class="stat-card"><div class="stat-icon stat-icon-wine">▢</div><span>Ventas del día</span><strong id="stat-ingresos">$0</strong><small id="stat-dia-note">vs ayer</small></article>
+                    <article class="stat-card"><div class="stat-icon stat-icon-wine">▦</div><span>Ventas del mes</span><strong id="stat-mes">$0</strong><small>Acumulado mensual</small></article>
+                    <article class="stat-card"><div class="stat-icon stat-icon-wine">♙</div><span>Clientes activos</span><strong id="stat-clientes">0</strong><small>Registrados</small></article>
+                    <article class="stat-card"><div class="stat-icon stat-icon-wine">♢</div><span>Perfumes activos</span><strong id="stat-perfumes">0</strong><small>En inventario</small></article>
+                    <article class="stat-card admin-only dashboard-admin-card"><div class="stat-icon stat-icon-gold">△</div><span>Productos agotados</span><strong id="stat-agotados">0</strong><small>Requieren atención</small></article>
+                    <article class="stat-card admin-only dashboard-admin-card"><div class="stat-icon stat-icon-gold">▤</div><span>Valor inventario</span><strong id="stat-inventario">$0</strong><small>Total disponible</small></article>
                 </div>
-                <div class="dashboard-grid-main">
-                    <article class="panel chart-panel sales-chart-card">
-                        <div class="panel-header"><h3>Ventas últimos 7 días</h3><button id="refresh-dashboard" class="secondary-button" type="button">Actualizar</button></div>
-                        <div class="luxury-line-chart" aria-label="Gráfica de ventas últimos 7 días">
-                            <svg viewBox="0 0 720 260" role="img">
-                                <defs><linearGradient id="goldFade" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#C9A227" stop-opacity="0.26"/><stop offset="1" stop-color="#C9A227" stop-opacity="0"/></linearGradient></defs>
-                                <path class="area" d="M40 190 L145 155 L250 128 L355 118 L460 76 L565 124 L680 102 L680 230 L40 230 Z"/>
-                                <path class="line" d="M40 190 L145 155 L250 128 L355 118 L460 76 L565 124 L680 102"/>
-                                <g class="points"><circle cx="40" cy="190"/><circle cx="145" cy="155"/><circle cx="250" cy="128"/><circle cx="355" cy="118"/><circle cx="460" cy="76"/><circle cx="565" cy="124"/><circle cx="680" cy="102"/></g>
-                            </svg>
-                            <div class="chart-labels"><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span></div>
-                        </div>
+                <div class="dashboard-luxe-grid">
+                    <article class="panel dashboard-sales-panel">
+                        <div class="panel-header"><h3>Ventas últimos 7 días</h3><button id="refresh-dashboard" class="secondary-button" type="button">Últimos 7 días</button></div>
+                        <div id="dashboard-sales-chart" class="dashboard-sales-chart"></div>
                     </article>
-                    <article class="panel latest-sales-card">
+                    <article class="panel dashboard-category-panel admin-only">
+                        <div class="panel-header"><h3>Ventas por categoría</h3></div>
+                        <div id="dashboard-category-chart" class="dashboard-category-chart"></div>
+                    </article>
+                    <article class="panel dashboard-top-panel">
+                        <div class="panel-header"><h3>Perfumes más vendidos</h3><button class="secondary-button" type="button" data-view="perfumes">Ver todos</button></div>
+                        <div id="dashboard-top-products" class="dashboard-top-products"></div>
+                    </article>
+                    <article class="panel dashboard-activity-panel">
                         <div class="panel-header"><h3>Actividad reciente</h3></div>
-                        <div id="recent-activity" class="timeline"></div>
+                        <div class="dashboard-activity-columns">
+                            <div><h4>Últimos clientes</h4><div id="dashboard-activity-clients"></div></div>
+                            <div><h4>Últimas ventas</h4><div id="recent-sales"></div></div>
+                            <div><h4>Perfumes agregados</h4><div id="dashboard-activity-perfumes"></div></div>
+                        </div>
+                        <div id="recent-activity" class="dashboard-hidden-feed"></div>
                     </article>
-                    <article class="panel latest-sales-card">
-                        <div class="panel-header"><h3>Últimas ventas</h3></div>
-                        <div id="recent-sales" class="timeline"></div>
-                    </article>
-                    <article class="panel stock-card">
-                        <div class="panel-header"><h3>Stock bajo</h3></div>
-                        <div id="low-stock" class="compact-list"></div>
+                    <article class="panel dashboard-alerts-panel admin-only">
+                        <div class="panel-header"><h3>Alertas importantes</h3></div>
+                        <div id="low-stock" class="dashboard-alerts-list"></div>
                     </article>
                 </div>
+                <div id="dashboard-bottom-metrics" class="dashboard-bottom-metrics"></div>
             </section>
 
             <section id="perfumes-section" class="view-section is-hidden">
@@ -173,13 +146,13 @@
                         <select id="perfumes-brand-filter" class="filter-select">
                             <option value="">Marca: Todas</option>
                         </select>
-                        <button id="show-perfume-form" class="primary-button" type="button">+ Agregar perfume</button>
+                        <button id="show-perfume-form" class="primary-button admin-only" type="button">+ Agregar perfume</button>
                         <button id="reload-perfumes" class="secondary-button" type="button">Recargar</button>
                     </div>
 
                     <div id="perfumes-kpis" class="perfumes-kpis"></div>
 
-                    <article id="perfume-form-panel" class="panel form-panel perfume-form-panel is-hidden">
+                    <article id="perfume-form-panel" class="panel form-panel perfume-form-panel is-hidden admin-only">
                         <div class="panel-header">
                             <div>
                                 <p class="eyebrow">Catálogo</p>
@@ -214,52 +187,64 @@
             </section>
 
             <section id="clientes-section" class="view-section is-hidden">
-                <div class="section-layout">
-                    <article class="panel form-panel">
-                        <div class="panel-header">
-                            <div>
-                                <p class="eyebrow">Relaciones</p>
-                                <h3 id="cliente-form-title">Nuevo cliente</h3>
+                <div class="clientes-dashboard">
+                    <div id="clientes-kpis" class="clientes-kpis"></div>
+                    <div class="clientes-workspace">
+                        <article class="panel cliente-form-card">
+                            <div class="cliente-form-heading">
+                                <span class="cliente-form-icon">♙</span>
+                                <div>
+                                    <p class="eyebrow">Nuevo</p>
+                                    <h3 id="cliente-form-title">Nuevo cliente</h3>
+                                </div>
                             </div>
-                        </div>
-                        <form id="cliente-form" class="grid-form">
-                            <input type="hidden" name="id">
-                            <label>Nombre<input name="nombre" required></label>
-                            <label>Teléfono<input name="telefono" required></label>
-                            <label>Correo<input name="correo" type="email" required></label>
-                            <label>Preferencia olfativa<input name="preferencia_olfativa" required></label>
-                            <div class="form-actions full">
-                                <button class="primary-button" type="submit">Guardar cliente</button>
-                                <button id="cancel-cliente-edit" class="ghost-button" type="button">Limpiar</button>
+                            <h4>Información personal</h4>
+                            <form id="cliente-form" class="cliente-grid-form">
+                                <input type="hidden" name="id">
+                                <label>Nombre completo<input name="nombre" required placeholder="Ej. María González"></label>
+                                <label>Teléfono<input name="telefono" required placeholder="Ej. 55 1234 5678"></label>
+                                <label>Correo electrónico<input name="correo" type="email" required placeholder="Ej. maria@email.com"></label>
+                                <label>Preferencia olfativa<input name="preferencia_olfativa" required placeholder="Ej. Dulce, Cítrico, Amaderado"></label>
+                                <div class="cliente-form-actions full">
+                                    <button class="primary-button" type="submit">Guardar cliente</button>
+                                    <button id="cancel-cliente-edit" class="ghost-button" type="button">Limpiar</button>
+                                </div>
+                            </form>
+                        </article>
+                        <article class="panel clientes-table-card">
+                            <div class="clientes-table-heading">
+                                <h3>Clientes registrados</h3>
+                                <div class="clientes-toolbar">
+                                    <label class="clientes-search"><input id="cliente-search" type="search" placeholder="Buscar cliente por nombre, correo o teléfono..."><span>⌕</span></label>
+                                    <select id="clientes-filter" class="filter-select">
+                                        <option value="activos">Estado: Activos</option>
+                                        <option value="inactivos">Estado: Inactivos</option>
+                                    </select>
+                                    <button id="reload-clientes" class="primary-button" type="button">Recargar</button>
+                                </div>
                             </div>
-                        </form>
-                    </article>
-                    <article class="panel table-panel">
-                        <div class="panel-header">
-                            <h3>Clientes</h3>
-                            <div class="panel-controls">
-                                <select id="clientes-filter" class="filter-select">
-                                    <option value="activos">Activos</option>
-                                    <option value="inactivos">Inactivos</option>
-                                </select>
-                                <button id="reload-clientes" class="secondary-button" type="button">Recargar</button>
+                            <div class="table-scroll clientes-table-scroll">
+                                <table class="clientes-modern-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Cliente</th>
+                                            <th>Teléfono</th>
+                                            <th>Correo</th>
+                                            <th>Preferencia</th>
+                                            <th>Compras</th>
+                                            <th>Total gastado</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="clientes-table"></tbody>
+                                </table>
                             </div>
-                        </div>
-                        <label class="search-box">Buscar cliente<input id="cliente-search" type="search" placeholder="Nombre, correo o preferencia"></label>
-                        <div class="table-scroll">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <th>Teléfono</th>
-                                        <th>Correo</th>
-                                        <th>Preferencia</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="clientes-table"></tbody>
-                            </table>
-                        </div>
+                            <div class="clientes-pagination"><span id="clientes-count-label">Mostrando clientes</span><div><button type="button">‹</button><button class="is-active" type="button">1</button><button type="button">›</button></div></div>
+                        </article>
+                    </div>
+                    <article class="clientes-insight-card">
+                        <div><span>☆</span><div><strong>Clientes frecuentes</strong><p id="clientes-insight-text">Los clientes con compras recurrentes ayudan a impulsar tus ventas.</p></div></div>
+                        <button class="secondary-button admin-only" type="button" data-view="reportes">Ver reporte de clientes</button>
                     </article>
                 </div>
             </section>
@@ -341,7 +326,7 @@
                 </article>
             </section>
 
-            <section id="inventario-section" class="view-section is-hidden">
+            <section id="inventario-section" class="view-section is-hidden admin-only">
                 <div class="section-header">
                     <h2>Inventario</h2>
                     <p class="section-subtitle">Gestiona el stock de perfumes</p>
@@ -394,8 +379,8 @@
                             <button id="clear-report-range" class="secondary-button" type="button">Limpiar</button>
                         </div>
                         <span id="report-date-range" class="report-range-label">Últimos 30 días</span>
-                        <button id="export-pdf" class="primary-button" type="button">Exportar PDF</button>
-                        <button id="export-excel" class="secondary-button" type="button">Exportar Excel</button>
+                        <button id="export-pdf" class="primary-button admin-only" type="button">Exportar PDF</button>
+                        <button id="export-excel" class="secondary-button admin-only" type="button">Exportar Excel</button>
                     </div>
                 </div>
                 <div class="reportes-kpis" id="reportes-kpis"></div>

@@ -15,7 +15,7 @@ router.get('/:id', verificarToken, perfumeController.obtenerPerfumePorId);
 router.post(
     '/',
     verificarToken,
-    permitirRoles('admin', 'vendedor'),
+    permitirRoles('admin'),
     upload.single('imagen'),
     validarPerfume,
     perfumeController.crearPerfume
@@ -24,7 +24,7 @@ router.post(
 router.put(
     '/:id',
     verificarToken,
-    permitirRoles('admin', 'vendedor'),
+    permitirRoles('admin'),
     upload.single('imagen'),
     validarPerfume,
     perfumeController.actualizarPerfume
