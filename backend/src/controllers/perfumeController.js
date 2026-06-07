@@ -1,4 +1,20 @@
 const Perfume = require('../models/perfumeModel');
+const cloudinary = require('../config/cloudinary');
+
+const uploadToCloudinary = async (file) => {
+    try {
+        const b64 = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+        const result = await cloudinary.uploader.upload(b64, {
+            folder: 'scentvault/perfumes',
+            public_id: `perfume_${Date.now()}`,
+            transformation: [{ width: 800, height: 800, crop: 'limit', quality: 'auto' }]
+        });
+        return result.secure_url;
+    } catch (error) {
+        console.error('Error subiendo a Cloudinary:', error.message);
+        return null;
+    }
+};
 
 const obtenerPerfumes = async (req, res) => {
     try {
@@ -47,7 +63,8 @@ const crearPerfume = async (req, res) => {
         const perfumeData = req.body;
         
         if (req.file) {
-            perfumeData.imagen_url = req.file.secure_url;
+            const url = await uploadToCloudinary(req.file);
+            if (url) perfumeData.imagen_url = url;
         }
         
         const nuevoPerfume = new Perfume(perfumeData);
@@ -73,7 +90,8 @@ const actualizarPerfume = async (req, res) => {
         const perfumeData = req.body;
         
         if (req.file) {
-            perfumeData.imagen_url = req.file.secure_url;
+            const url = await uploadToCloudinary(req.file);
+            if (url) perfumeData.imagen_url = url;
         }
         
         const perfumeActualizado = await Perfume.findByIdAndUpdate(

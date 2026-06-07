@@ -50,4 +50,28 @@ app.use('/api/perfumes', perfumeRoutes);
 app.use('/api/ventas', ventaRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
+// Middleware de manejo de errores
+app.use((err, req, res, next) => {
+    console.error('Error no manejado:', err);
+    
+    if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({
+            ok: false,
+            error: 'La imagen supera el límite de 5 MB'
+        });
+    }
+    
+    if (err.message && err.message.includes('Solo se permiten')) {
+        return res.status(400).json({
+            ok: false,
+            error: err.message
+        });
+    }
+    
+    res.status(err.status || 500).json({
+        ok: false,
+        error: err.message || 'Error interno del servidor'
+    });
+});
+
 module.exports = app;
