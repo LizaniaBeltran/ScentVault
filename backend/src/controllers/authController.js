@@ -1,28 +1,19 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const pool = require('../config/db');
+const User = require('../models/userModel');
 
 const login = async (req, res) => {
     try {
         const { correo, password } = req.body;
 
-        const result = await pool.query(
-            `SELECT usuarios.id, usuarios.nombre, usuarios.correo, usuarios.password_hash,
-                    usuarios.activo, roles.nombre AS rol
-             FROM usuarios
-             INNER JOIN roles ON usuarios.rol_id = roles.id
-             WHERE usuarios.correo = $1`,
-            [correo]
-        );
+        const usuario = await User.findOne({ correo: correo.toLowerCase() }).populate('rol');
 
-        if (result.rows.length === 0) {
+        if (!usuario) {
             return res.status(401).json({
                 ok: false,
                 error: 'Credenciales incorrectas'
             });
         }
-
-        const usuario = result.rows[0];
 
         if (!usuario.activo) {
             return res.status(403).json({
@@ -42,10 +33,10 @@ const login = async (req, res) => {
 
         const token = jwt.sign(
             {
-                id: usuario.id,
+                id: usuario._id,
                 nombre: usuario.nombre,
                 correo: usuario.correo,
-                rol: usuario.rol
+                rol: usuario.rol.nombre
             },
             process.env.JWT_SECRET,
             {
@@ -58,14 +49,16 @@ const login = async (req, res) => {
             message: 'Inicio de sesión correcto',
             token,
             usuario: {
-                id: usuario.id,
+                id: usuario._id,
                 nombre: usuario.nombre,
                 correo: usuario.correo,
-                rol: usuario.rol
+                rol: usuario.rol.nombre
             }
         });
 
     } catch (error) {
+        console.error('Error detallado en login:', error);
+        console.error('Stack:', error.stack);
         res.status(500).json({
             ok: false,
             error: 'Error al iniciar sesión'

@@ -1,92 +1,51 @@
-const pool = require('../config/db');
+const mongoose = require('mongoose');
 
-const obtenerPerfumes = async () => {
-    const query = 'SELECT * FROM perfumes WHERE activo = true ORDER BY id DESC';
-    const result = await pool.query(query);
-    return result.rows;
-};
-
-const crearPerfume = async (perfume) => {
-    const query = `
-        INSERT INTO perfumes (
-            nombre, marca, familia_olfativa, notas_salida, notas_medias,
-            notas_fondo, temporada, duracion_horas, precio, stock, imagen_url, descripcion
-        )
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
-        RETURNING *;
-    `;
-
-    const values = [
-        perfume.nombre,
-        perfume.marca,
-        perfume.familia_olfativa,
-        perfume.notas_salida || null,
-        perfume.notas_medias || null,
-        perfume.notas_fondo || null,
-        perfume.temporada || null,
-        perfume.duracion_horas || null,
-        perfume.precio,
-        perfume.stock,
-        perfume.imagen_url || null,
-        perfume.descripcion || null
-    ];
-
-    const result = await pool.query(query, values);
-    return result.rows[0];
-};
-
-const actualizarPerfume = async (id, perfume) => {
-    // Primero obtener el perfume actual para conservar imagen si no se sube nueva
-    const queryActual = 'SELECT imagen_url FROM perfumes WHERE id = $1 AND activo = true';
-    const resultActual = await pool.query(queryActual, [id]);
-    
-    if (resultActual.rows.length === 0) {
-        return null;
+const perfumeSchema = new mongoose.Schema({
+    nombre: {
+        type: String,
+        required: true
+    },
+    marca: {
+        type: String,
+        required: true
+    },
+    familia_olfativa: {
+        type: String
+    },
+    notas_salida: {
+        type: String
+    },
+    notas_medias: {
+        type: String
+    },
+    notas_fondo: {
+        type: String
+    },
+    temporada: {
+        type: String
+    },
+    duracion_horas: {
+        type: Number
+    },
+    precio: {
+        type: Number,
+        required: true
+    },
+    stock: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    imagen_url: {
+        type: String
+    },
+    descripcion: {
+        type: String
+    },
+    activo: {
+        type: Boolean,
+        default: true
     }
-    
-    const imagenUrl = perfume.imagen_url !== undefined ? perfume.imagen_url : resultActual.rows[0].imagen_url;
-    
-    const query = `
-        UPDATE perfumes
-        SET 
-            nombre = $1,
-            marca = $2,
-            familia_olfativa = $3,
-            notas_salida = $4,
-            notas_medias = $5,
-            notas_fondo = $6,
-            temporada = $7,
-            duracion_horas = $8,
-            precio = $9,
-            stock = $10,
-            imagen_url = $11,
-            descripcion = $12
-        WHERE id = $13 AND activo = true
-        RETURNING *;
-    `;
+}, { timestamps: true });
 
-    const values = [
-        perfume.nombre,
-        perfume.marca,
-        perfume.familia_olfativa,
-        perfume.notas_salida || null,
-        perfume.notas_medias || null,
-        perfume.notas_fondo || null,
-        perfume.temporada || null,
-        perfume.duracion_horas || null,
-        perfume.precio,
-        perfume.stock,
-        imagenUrl,
-        perfume.descripcion || null,
-        id
-    ];
-
-    const result = await pool.query(query, values);
-    return result.rows[0];
-};
-
-module.exports = {
-    obtenerPerfumes,
-    crearPerfume,
-    actualizarPerfume
-};
+module.exports = mongoose.model('Perfume', perfumeSchema);

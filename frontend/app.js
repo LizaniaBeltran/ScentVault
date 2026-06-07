@@ -348,7 +348,7 @@ function renderPerfumes() {
     `).join('');
 
     $$('[data-edit-perfume]').forEach((button) => {
-        button.addEventListener('click', () => editPerfume(Number(button.dataset.editPerfume)));
+        button.addEventListener('click', () => editPerfume(button.dataset.editPerfume));
     });
 }
 
@@ -378,7 +378,7 @@ function renderClientes() {
     `).join('');
 
     $$('[data-edit-cliente]').forEach((button) => {
-        button.addEventListener('click', () => editCliente(Number(button.dataset.editCliente)));
+        button.addEventListener('click', () => editCliente(button.dataset.editCliente));
     });
 }
 
@@ -473,10 +473,10 @@ async function saveVenta(event) {
     const formData = new FormData(event.currentTarget);
     const clienteId = formData.get('cliente_id');
     const payload = {
-        cliente_id: clienteId ? Number(clienteId) : null,
+        cliente: clienteId || null,
         metodo_pago: formData.get('metodo_pago'),
         productos: state.saleItems.map((item) => ({
-            perfume_id: item.perfume_id,
+            perfume: item.perfume,
             cantidad: item.cantidad
         }))
     };
@@ -497,7 +497,7 @@ async function saveVenta(event) {
 }
 
 function addSaleItem() {
-    const perfumeId = Number($('#venta-perfume').value);
+    const perfumeId = $('#venta-perfume').value;
     const cantidad = Number($('#venta-cantidad').value);
     const perfume = state.perfumes.find((item) => item.id === perfumeId);
 
@@ -506,12 +506,12 @@ function addSaleItem() {
         return;
     }
 
-    const existing = state.saleItems.find((item) => item.perfume_id === perfumeId);
+    const existing = state.saleItems.find((item) => item.perfume === perfumeId);
     if (existing) {
         existing.cantidad += cantidad;
     } else {
         state.saleItems.push({
-            perfume_id: perfumeId,
+            perfume: perfumeId,
             nombre: perfume.nombre,
             precio: Number(perfume.precio),
             cantidad

@@ -1,17 +1,43 @@
-const perfumeModel = require('../models/perfumeModel');
+const Perfume = require('../models/perfumeModel');
 
 const obtenerPerfumes = async (req, res) => {
     try {
-        const perfumes = await perfumeModel.obtenerPerfumes();
+        const perfumes = await Perfume.find({ activo: true }).sort({ createdAt: -1 });
 
         res.json({
             ok: true,
             data: perfumes
         });
     } catch (error) {
+        console.error('Error al obtener perfumes:', error);
         res.status(500).json({
             ok: false,
             error: 'Error al obtener perfumes'
+        });
+    }
+};
+
+const obtenerPerfumePorId = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const perfume = await Perfume.findById(id);
+
+        if (!perfume) {
+            return res.status(404).json({
+                ok: false,
+                error: 'Perfume no encontrado'
+            });
+        }
+
+        res.json({
+            ok: true,
+            data: perfume
+        });
+    } catch (error) {
+        console.error('Error al obtener perfume:', error);
+        res.status(500).json({
+            ok: false,
+            error: 'Error al obtener perfume'
         });
     }
 };
@@ -20,12 +46,12 @@ const crearPerfume = async (req, res) => {
     try {
         const perfumeData = req.body;
         
-        // Si se subió una imagen, agregar URL de Cloudinary
         if (req.file) {
             perfumeData.imagen_url = req.file.secure_url;
         }
         
-        const nuevoPerfume = await perfumeModel.crearPerfume(perfumeData);
+        const nuevoPerfume = new Perfume(perfumeData);
+        await nuevoPerfume.save();
 
         res.status(201).json({
             ok: true,
@@ -46,13 +72,15 @@ const actualizarPerfume = async (req, res) => {
         const { id } = req.params;
         const perfumeData = req.body;
         
-        // Si se subió una nueva imagen, agregar URL de Cloudinary
         if (req.file) {
             perfumeData.imagen_url = req.file.secure_url;
         }
-        // Si no se subió imagen, no modificar imagen_url (conservar la anterior)
         
-        const perfumeActualizado = await perfumeModel.actualizarPerfume(id, perfumeData);
+        const perfumeActualizado = await Perfume.findByIdAndUpdate(
+            id,
+            perfumeData,
+            { new: true }
+        );
 
         if (!perfumeActualizado) {
             return res.status(404).json({
@@ -75,8 +103,36 @@ const actualizarPerfume = async (req, res) => {
     }
 };
 
+const eliminarPerfume = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const perfumeEliminado = await Perfume.findByIdAndDelete(id);
+
+        if (!perfumeEliminado) {
+            return res.status(404).json({
+                ok: false,
+                error: 'Perfume no encontrado'
+            });
+        }
+
+        res.json({
+            ok: true,
+            message: 'Perfume eliminado correctamente',
+            data: perfumeEliminado
+        });
+    } catch (error) {
+        console.error('Error al eliminar perfume:', error);
+        res.status(500).json({
+            ok: false,
+            error: 'Error al eliminar perfume'
+        });
+    }
+};
+
 module.exports = {
     obtenerPerfumes,
+    obtenerPerfumePorId,
     crearPerfume,
-    actualizarPerfume
+    actualizarPerfume,
+    eliminarPerfume
 };

@@ -15,6 +15,19 @@ services:
     volumes:
       - scentvault_data:/var/lib/postgresql/data
 
+  mongo:
+    image: mongo:7
+    container_name: scentvault-mongo
+    restart: unless-stopped
+    
+    ports:
+      - "27017:27017"
+    
+    volumes:
+      - mongo_data:/data/db
+    
+    command: mongod --noauth
+
 volumes:
   scentvault_data:
-  
+  mongo_data:

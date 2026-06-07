@@ -2,10 +2,19 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+
+// Registrar modelos Mongoose
+require('./models/roleModel');
+require('./models/userModel');
+require('./models/perfumeModel');
+require('./models/clienteModel');
+require('./models/ventaModel');
+
 const perfumeRoutes = require('./routes/perfumeRoutes');
 const authRoutes = require('./routes/authRoutes');
 const clienteRoutes = require('./routes/clienteRoutes');
 const ventaRoutes = require('./routes/ventaRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 const app = express();
 
@@ -38,7 +47,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/perfumes', perfumeRoutes);
-app.use('/api/perfumes', perfumeRoutes);
 app.use('/api/ventas', ventaRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 module.exports = app;

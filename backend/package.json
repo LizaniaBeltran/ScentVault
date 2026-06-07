@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "seed": "node src/seed.js"
   },
   "keywords": [],
   "author": "Lizania Lolita Beltran Castro",
@@ -21,9 +22,9 @@
     "express-validator": "^7.3.2",
     "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.24.0",
     "multer": "^2.1.1",
-    "multer-storage-cloudinary": "^4.0.0",
-    "pg": "^8.21.0"
+    "multer-storage-cloudinary": "^4.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

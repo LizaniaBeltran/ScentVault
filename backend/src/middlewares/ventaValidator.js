@@ -1,10 +1,15 @@
 const { body, validationResult } = require('express-validator');
+const mongoose = require('mongoose');
 
 const validarVenta = [
-    body('cliente_id')
+    body('cliente')
         .optional({ nullable: true })
-        .isInt({ min: 1 })
-        .withMessage('El cliente debe ser válido'),
+        .custom(value => {
+            if (!mongoose.Types.ObjectId.isValid(value)) {
+                throw new Error('El cliente debe ser válido');
+            }
+            return true;
+        }),
 
     body('metodo_pago')
         .trim()
@@ -15,9 +20,13 @@ const validarVenta = [
         .isArray({ min: 1 })
         .withMessage('Debe agregar al menos un producto'),
 
-    body('productos.*.perfume_id')
-        .isInt({ min: 1 })
-        .withMessage('El perfume debe ser válido'),
+    body('productos.*.perfume')
+        .custom(value => {
+            if (!mongoose.Types.ObjectId.isValid(value)) {
+                throw new Error('El perfume debe ser válido');
+            }
+            return true;
+        }),
 
     body('productos.*.cantidad')
         .isInt({ min: 1 })
