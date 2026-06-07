@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:3000/api';
+const API_URL = 'https://scentvault-backend-4tvs.onrender.com/api';
 
 const state = {
     token: localStorage.getItem('scentvault_token') || localStorage.getItem('token'),
